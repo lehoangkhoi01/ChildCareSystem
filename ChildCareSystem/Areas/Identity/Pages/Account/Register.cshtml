@@ -1,0 +1,76 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="wrapper container my-5 px-4">
+    <h1>Register form</h1>
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <form asp-route-returnUrl="@Model.ReturnUrl" method="POST">
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="fullNanme">Full name</label>
+                <input type="text" class="form-control" id="fullName">
+            </div>
+            <div class="form-group col-md-6">
+                <label asp-for="Input.Email"></label>
+                <input asp-for="Input.Email" class="form-control" />
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="phoneNumber">Phone number</label>
+                <input type="text" class="form-control" id="phoneNumber" name="phoneNum">
+            </div>
+            <div class="form-group col-md-6">
+                <label asp-for="Input.Address">Adrress</label>
+                <input asp-for="Input.Address" class="form-control" id="address">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="col">
+                <div class="form-group">
+                    <label asp-for="Input.Password"></label>
+                    <input asp-for="Input.Password" class="form-control" />
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label asp-for="Input.ConfirmPassword"></label>
+                    <input asp-for="Input.ConfirmPassword" class="form-control" />
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <input asp-for="Input.RoleAssigned" value="Customer" hidden>
+        <div class="text-center">
+            <button type="submit" class="btn btn-success col-md-4">Sign up</button>
+        </div>
+    </form>
+</div>
+
+<style>
+    .wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100%;
+    }
+
+    .wrapper form {
+        width: 100%;
+    }
+
+    .wrapper h1 {
+        margin-bottom: 20px;
+    }
+</style>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
