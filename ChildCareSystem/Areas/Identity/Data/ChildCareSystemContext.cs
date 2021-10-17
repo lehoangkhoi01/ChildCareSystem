@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ChildCareSystem.Areas.Identity.Data;
+using ChildCareSystem.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -45,5 +46,9 @@ namespace ChildCareSystem.Data
             });
 
         }
+
+        public DbSet<Blog> Blog { get; set; }
+        public DbSet<BlogCategory> BlogCategory { get; set; }
+
     }
 }

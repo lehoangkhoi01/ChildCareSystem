@@ -11,7 +11,7 @@
         <div class="form-row">
             <div class="form-group col-md-6">
                 <label for="fullNanme">Full name</label>
-                <input type="text" class="form-control" id="fullName">
+                <input asp-for="Input.Fullname" class="form-control" id="fullName">
             </div>
             <div class="form-group col-md-6">
                 <label asp-for="Input.Email"></label>
@@ -23,7 +23,7 @@
         <div class="form-row">
             <div class="form-group col-md-6">
                 <label for="phoneNumber">Phone number</label>
-                <input type="text" class="form-control" id="phoneNumber" name="phoneNum">
+                <input type="text" class="form-control" id="phoneNumber" asp-for="Input.PhoneNumber">
             </div>
             <div class="form-group col-md-6">
                 <label asp-for="Input.Address">Adrress</label>
@@ -48,7 +48,8 @@
             </div>
         </div>
 
-        <input asp-for="Input.RoleAssigned" value="Customer" hidden>
+        <input asp-for="Input.RoleAssigned" value="Admin" hidden>
+        
         <div class="text-center">
             <button type="submit" class="btn btn-success col-md-4">Sign up</button>
         </div>

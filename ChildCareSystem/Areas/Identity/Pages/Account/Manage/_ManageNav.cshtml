@@ -1,4 +1,5 @@
-﻿@inject SignInManager<ChildCareSystemUser> SignInManager
+﻿@using ChildCareSystem.Areas.Identity.Data
+@inject SignInManager<ChildCareSystemUser> SignInManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
 }

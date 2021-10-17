@@ -94,7 +94,13 @@ namespace ChildCareSystem.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new ChildCareSystemUser { UserName = Input.Email, Email = Input.Email };
+                var user = new ChildCareSystemUser { 
+                    UserName = Input.Fullname, 
+                    Email = Input.Email,
+                    PhoneNumber = Input.PhoneNumber,
+                    FullName = Input.Fullname,
+                    Address = Input.Address
+                };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
@@ -103,7 +109,7 @@ namespace ChildCareSystem.Areas.Identity.Pages.Account
                     await _userManager.AddToRoleAsync(user, Input.RoleAssigned);
                     if(!string.IsNullOrEmpty(Input.SpecialtyId))
                     {
-                        await _userManager.AddClaimAsync(user, new Claim("Test", Input.SpecialtyId));
+                        await _userManager.AddClaimAsync(user, new Claim("SpecialtyId", Input.SpecialtyId));
                     }
                     
 
