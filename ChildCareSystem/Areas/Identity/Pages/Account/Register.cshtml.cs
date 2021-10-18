@@ -95,7 +95,7 @@ namespace ChildCareSystem.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = new ChildCareSystemUser { 
-                    UserName = Input.Fullname, 
+                    UserName = Input.Email, 
                     Email = Input.Email,
                     PhoneNumber = Input.PhoneNumber,
                     FullName = Input.Fullname,

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ChildCareSystem.Models
 {
-    public class BlogCategory
+    public class ServiceCategory
     {
         public int Id { get; set; }
         public string CategoryName { get; set; }

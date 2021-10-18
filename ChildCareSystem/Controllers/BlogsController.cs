@@ -9,6 +9,10 @@ using ChildCareSystem.Data;
 using ChildCareSystem.Models;
 using Microsoft.AspNetCore.Authorization;
 using ChildCareSystem.ViewModels;
+using ChildCareSystem.Areas.Identity.Data;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
+
 
 namespace ChildCareSystem.Controllers
 {
@@ -16,16 +20,25 @@ namespace ChildCareSystem.Controllers
     public class BlogsController : Controller
     {
         private readonly ChildCareSystemContext _context;
+        private readonly UserManager<ChildCareSystemUser> _userManager;
+        private readonly SignInManager<ChildCareSystemUser> _signInManager;
 
-        public BlogsController(ChildCareSystemContext context)
+        public BlogsController(ChildCareSystemContext context,
+                               UserManager<ChildCareSystemUser> userManager,
+                               SignInManager<ChildCareSystemUser> signInManager)
         {
             _context = context;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         // GET: Blogs
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Blog.ToListAsync());
+            return View(await _context.Blog
+                .Include(b => b.BlogCategory)
+                .Include(b => b.ChildCareSystemUser)
+                .ToListAsync());
         }
 
         // GET: Blogs/Details/5
@@ -47,8 +60,10 @@ namespace ChildCareSystem.Controllers
         }
 
         // GET: Blogs/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var list = await _context.BlogCategory.ToListAsync();
+            ViewBag.Category = new SelectList(list, "Id", "CategoryName");
             return View();
         }
 
@@ -57,7 +72,7 @@ namespace ChildCareSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Content,imageLink,imageName")] BlogViewModel blogViewModel)
+        public async Task<IActionResult> Create([Bind("Id,Title,Content,ImageLink,ImageName,CategoryId")] BlogViewModel blogViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -66,18 +81,22 @@ namespace ChildCareSystem.Controllers
                 if (blogObj != null)
                 {
                     ViewBag.ErrorMessage = "This blog is already existed.";
-                } else
+                }
+                else
                 {
+
                     Blog blog = new Blog
                     {
                         Title = blogViewModel.Title,
                         Content = blogViewModel.Content,
-                        imageLink = blogViewModel.imageLink
+                        Image = blogViewModel.ImageLink,
+                        BlogCategoryId = blogViewModel.CategoryId,
+                        AuthorId = User.FindFirstValue(ClaimTypes.NameIdentifier)
                     };
                     _context.Add(blog);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
-                }   
+                }
             }
             return View(blogViewModel);
         }
@@ -89,13 +108,24 @@ namespace ChildCareSystem.Controllers
             {
                 return NotFound();
             }
-
+            
             var blog = await _context.Blog.FindAsync(id);
+            BlogViewModel blogViewModel = new BlogViewModel();
             if (blog == null)
             {
                 return NotFound();
             }
-            return View(blog);
+            var list = await _context.BlogCategory.ToListAsync();
+            ViewData["Category"] = new SelectList(list, "Id", "CategoryName", blog.BlogCategoryId);
+            blogViewModel.Id = blog.Id;
+            blogViewModel.ImageLink = blog.Image;
+            blogViewModel.Title = blog.Title;
+            blogViewModel.Content = blog.Content;
+            blogViewModel.CategoryId = blog.BlogCategoryId;
+            blogViewModel.AuthorId = blog.AuthorId;
+
+
+            return View(blogViewModel);
         }
 
         // POST: Blogs/Edit/5
@@ -103,9 +133,10 @@ namespace ChildCareSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Content,imageLink")] Blog blog)
+        public async Task<IActionResult> Edit(int id, 
+                                             [Bind("Id,Title,Content,ImageLink,ImageName,CategoryId")] BlogViewModel blogViewModel)
         {
-            if (id != blog.Id)
+            if (id != blogViewModel.Id)
             {
                 return NotFound();
             }
@@ -114,12 +145,38 @@ namespace ChildCareSystem.Controllers
             {
                 try
                 {
-                    _context.Update(blog);
-                    await _context.SaveChangesAsync();
+                    //List<Blog> listBlog = new List<Blog>();
+                    //listBlog = await _context.Blog.ToListAsync();
+                    List<Blog> listBlog = await _context.Blog.ToListAsync();
+                    listBlog.RemoveAll(c => c.Id == blogViewModel.Id);
+                    var blogDuplicate = listBlog
+                                        .FirstOrDefault(b => b.Title.Trim().ToUpper() == blogViewModel.Title.Trim().ToUpper());
+                    if (blogDuplicate != null)
+                    {
+                        ViewBag.ErrorMessage = "This blog's title is already existed.";
+                        var list = await _context.BlogCategory.ToListAsync();
+                        ViewData["Category"] = new SelectList(list, "Id", "CategoryName", blogViewModel.CategoryId);
+                    } 
+                    else
+                    {
+                        _context.ChangeTracker.Clear();
+                        Blog blog = new Blog
+                        {
+                            Id = blogViewModel.Id,
+                            Title = blogViewModel.Title,
+                            Content = blogViewModel.Content,
+                            AuthorId = User.FindFirstValue(ClaimTypes.NameIdentifier),
+                            Image = blogViewModel.ImageLink,
+                            BlogCategoryId = blogViewModel.CategoryId,                                                     
+                        };
+                        _context.Blog.Update(blog);
+                        await _context.SaveChangesAsync();
+                        return RedirectToAction(nameof(Index));
+                    }                                      
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!BlogExists(blog.Id))
+                    if (!BlogExists(blogViewModel.Id))
                     {
                         return NotFound();
                     }
@@ -128,9 +185,9 @@ namespace ChildCareSystem.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                
             }
-            return View(blog);
+            return View(blogViewModel);
         }
 
         // GET: Blogs/Delete/5

@@ -44,11 +44,15 @@ namespace ChildCareSystem.Data
             {
                 entity.ToTable(name: "RoleClaims");
             });
+            builder.Entity<Service>()
+                .HasIndex(s => s.ServiceName).IsUnique();
 
         }
 
         public DbSet<Blog> Blog { get; set; }
         public DbSet<BlogCategory> BlogCategory { get; set; }
+        public DbSet<Specialty> Specialty { get; set; }
+        public DbSet<Service> Service { get; set; }
 
     }
 }

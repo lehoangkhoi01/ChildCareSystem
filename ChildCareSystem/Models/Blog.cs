@@ -12,11 +12,13 @@ namespace ChildCareSystem.Models
         public int Id { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
-        public string imageLink { get; set; }
+        public string Image { get; set; }
         
-        [ForeignKey("CategoryId")]
+        [ForeignKey("Id")]
+        public int BlogCategoryId { get; set; }
         public BlogCategory BlogCategory { get; set; }
-
+      
+        public string AuthorId { get; set; }
         [ForeignKey("AuthorId")]
         public ChildCareSystemUser ChildCareSystemUser { get; set; }
     }

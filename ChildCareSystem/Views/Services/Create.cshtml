@@ -1,4 +1,4 @@
-﻿@model ChildCareSystem.ViewModels.BlogViewModel
+﻿@model ChildCareSystem.ViewModels.ServiceViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -15,36 +15,44 @@
         let status = 'failed'
     </script>
 }
-<h4>Blog</h4>
+<h4>Service</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create" id="blogForm">
+        <form asp-action="Create" id="serviceForm">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
+                <label asp-for="ServiceName" class="control-label"></label>
+                <input asp-for="ServiceName" class="form-control" />
+                <span asp-validation-for="ServiceName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CategoryId" class="control-label"></label>
-                <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Category"></select>
+                <label asp-for="SpecialtyId" class="control-label"></label>
+                <select asp-for="SpecialtyId" class="form-control" asp-items="ViewBag.Specialty"></select>
             </div>
             <div class="form-group">
-                <label asp-for="Content" class="control-label"></label>
-                <textarea asp-for="Content" class="form-control" rows="3"></textarea>
-                <span asp-validation-for="Content" class="text-danger"></span>
+                <label asp-for="Description" class="control-label"></label>
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
             </div>
-            <div class="form-row col-12">
-                <div class="form-group col-12">
+
+            <div class="form-row">
+                <div class="form-group">
                     <label asp-for="ImageLink" class="control-label"></label>
-                    <input asp-for="ImageLink" id="uploadedImg" hidden/>
+                    <input asp-for="ImageLink" id="uploadedImg" hidden />
                     <input asp-for="ImageName" id="imageName" hidden/>
                     <input type="file" id="image" class="form-control" />
                     <span asp-validation-for="ImageLink" class="text-danger"></span>
                     <span class="text-danger" hidden id="uploadImageError">Please choose an image for this blog.</span>
                 </div>
             </div>
+
+            <div class="form-group">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+
             <div class="form-group">
                 <button class="btn btn-primary col-md-3" type="button" onclick="upLoadImage()">Create</button>
             </div>
@@ -78,7 +86,7 @@
     </script>
     <script>
         function upLoadImage() {
-            const ref = firebase.storage().ref("images/blogs");
+            const ref = firebase.storage().ref("images/service");
             const file = document.querySelector("#image").files[0];
             if (file != null) {
                 const metadata = {
@@ -89,9 +97,9 @@
                 const uploadIMG = ref.child(name).put(file, metadata);
                 uploadIMG
                     .then(snapshot => snapshot.ref.getDownloadURL())
-                    .then(url => {                       
+                    .then(url => {
                         $("#uploadedImg").val(url);
-                        $("#blogForm").submit();
+                        $("#serviceForm").submit();
                     })
                     .catch(console.error)
             } else {
@@ -102,10 +110,8 @@
     <script>
         if (status === 'failed') {
             var imageName = document.getElementById("imageName").value;
-            var fileLocation = "images/blogs/" + imageName;
+            var fileLocation = "images/service/" + imageName;
             firebase.storage().ref().child(fileLocation).delete();
         }
     </script>
-    
-
 }
