@@ -12,22 +12,22 @@ using Microsoft.AspNetCore.Authorization;
 namespace ChildCareSystem.Controllers
 {
     [Authorize(Roles = "Admin")]
-    public class BlogCategoriesController : Controller
+    public class SpecialtiesController : Controller
     {
         private readonly ChildCareSystemContext _context;
 
-        public BlogCategoriesController(ChildCareSystemContext context)
+        public SpecialtiesController(ChildCareSystemContext context)
         {
             _context = context;
         }
 
-        // GET: BlogCategories
+        // GET: Specialties
         public async Task<IActionResult> Index()
         {
-            return View(await _context.BlogCategory.ToListAsync());
+            return View(await _context.Specialty.ToListAsync());
         }
 
-        // GET: BlogCategories/Details/5
+        // GET: Specialties/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -35,48 +35,49 @@ namespace ChildCareSystem.Controllers
                 return NotFound();
             }
 
-            var blogCategory = await _context.BlogCategory
+            var specialty = await _context.Specialty
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (blogCategory == null)
+            if (specialty == null)
             {
                 return NotFound();
             }
 
-            return View(blogCategory);
+            return View(specialty);
         }
 
-        // GET: BlogCategories/Create
+        // GET: Specialties/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: BlogCategories/Create
+        // POST: Specialties/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,CategoryName")] BlogCategory blogCategory)
+        public async Task<IActionResult> Create([Bind("Id,SpecialtyName")] Specialty specialty)
         {
             if (ModelState.IsValid)
             {
-                var category = await _context.BlogCategory
-                    .FirstOrDefaultAsync(b => b.CategoryName.Trim().ToUpper() == blogCategory.CategoryName.Trim().ToUpper());
-                if (category != null)
+                var specialtyDuplicate = await _context.Specialty
+                    .FirstOrDefaultAsync(b => b.SpecialtyName.Trim().ToUpper() == specialty.SpecialtyName.Trim().ToUpper());
+                if (specialtyDuplicate != null)
                 {
-                    ViewBag.ErrorMessage = "This category is already existed.";
+                    ViewBag.ErrorMessage = "This specialty is already existed.";
                 } 
                 else
                 {
-                    _context.Add(blogCategory);
+                    _context.Add(specialty);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
-                }              
+                }
+                
             }
-            return View(blogCategory);
+            return View(specialty);
         }
 
-        // GET: BlogCategories/Edit/5
+        // GET: Specialties/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -84,22 +85,22 @@ namespace ChildCareSystem.Controllers
                 return NotFound();
             }
 
-            var blogCategory = await _context.BlogCategory.FindAsync(id);
-            if (blogCategory == null)
+            var specialty = await _context.Specialty.FindAsync(id);
+            if (specialty == null)
             {
                 return NotFound();
             }
-            return View(blogCategory);
+            return View(specialty);
         }
 
-        // POST: BlogCategories/Edit/5
+        // POST: Specialties/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,CategoryName")] BlogCategory blogCategory)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,SpecialtyName")] Specialty specialty)
         {
-            if (id != blogCategory.Id)
+            if (id != specialty.Id)
             {
                 return NotFound();
             }
@@ -108,28 +109,26 @@ namespace ChildCareSystem.Controllers
             {
                 try
                 {
+                    List<Specialty> listSpecialty = await _context.Specialty.ToListAsync();
+                    listSpecialty.RemoveAll(c => c.Id == specialty.Id);
+                    Specialty specialtyTest = listSpecialty
+                        .FirstOrDefault(b => b.SpecialtyName.Trim().ToUpper() == specialty.SpecialtyName.Trim().ToUpper());
 
-                    List<BlogCategory> listCategory = new List<BlogCategory>();
-                    listCategory =  await _context.BlogCategory.ToListAsync();          
-                    listCategory.RemoveAll(c => c.Id == blogCategory.Id);
-                    BlogCategory categoryTest = listCategory
-                        .FirstOrDefault(b => b.CategoryName.Trim().ToUpper() == blogCategory.CategoryName.Trim().ToUpper());
-
-                    if (categoryTest != null)
+                    if (specialtyTest != null)
                     {
-                        ViewBag.ErrorMessage = "This category is already existed.";
+                        ViewBag.ErrorMessage = "This specialty is already existed.";
                     }
                     else
                     {
                         _context.ChangeTracker.Clear();
-                        _context.BlogCategory.Update(blogCategory);
+                        _context.Specialty.Update(specialty);
                         await _context.SaveChangesAsync();
                         return RedirectToAction(nameof(Index));
-                    }                   
+                    }                  
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!BlogCategoryExists(blogCategory.Id))
+                    if (!SpecialtyExists(specialty.Id))
                     {
                         return NotFound();
                     }
@@ -137,12 +136,13 @@ namespace ChildCareSystem.Controllers
                     {
                         throw;
                     }
-                }              
+                }
+                
             }
-            return View(blogCategory);
+            return View(specialty);
         }
 
-        // GET: BlogCategories/Delete/5
+        // GET: Specialties/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -150,29 +150,30 @@ namespace ChildCareSystem.Controllers
                 return NotFound();
             }
 
-            var blogCategory = await _context.BlogCategory
+            var specialty = await _context.Specialty
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (blogCategory == null)
+            if (specialty == null)
             {
                 return NotFound();
             }
-            return View(blogCategory);
+
+            return View(specialty);
         }
 
-        // POST: BlogCategories/Delete/5
+        // POST: Specialties/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var blogCategory = await _context.BlogCategory.FindAsync(id);
-            _context.BlogCategory.Remove(blogCategory);
+            var specialty = await _context.Specialty.FindAsync(id);
+            _context.Specialty.Remove(specialty);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool BlogCategoryExists(int id)
+        private bool SpecialtyExists(int id)
         {
-            return _context.BlogCategory.Any(e => e.Id == id);
+            return _context.Specialty.Any(e => e.Id == id);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ChildCareSystem.Models.Blog>
+﻿@model IEnumerable<ChildCareSystem.Models.Service>
 
 @{
     ViewData["Title"] = "Index";
@@ -14,19 +14,19 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Title)
+                @Html.DisplayNameFor(model => model.ServiceName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Content)
+                @Html.DisplayNameFor(model => model.ThumbnailLink)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Image)
+                @Html.DisplayNameFor(model => model.Description)
             </th>
             <th>
-                Category
+                @Html.DisplayNameFor(model => model.Price)
             </th>
             <th>
-                Author
+                @Html.DisplayNameFor(model => model.Specialty)
             </th>
             <th></th>
         </tr>
@@ -35,19 +35,19 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Title)
+                @Html.DisplayFor(modelItem => item.ServiceName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Content)
+                @Html.DisplayFor(modelItem => item.ThumbnailLink)
             </td>
             <td>
-                <img src="@item.Image" width="70" height="70"/>
+                @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.BlogCategory.CategoryName)
+                @Html.DisplayFor(modelItem => item.Price)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ChildCareSystemUser.FullName)
+                @Html.DisplayFor(modelItem => item.Specialty.Id)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

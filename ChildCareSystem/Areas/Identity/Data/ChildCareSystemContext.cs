@@ -49,6 +49,8 @@ namespace ChildCareSystem.Data
 
         public DbSet<Blog> Blog { get; set; }
         public DbSet<BlogCategory> BlogCategory { get; set; }
+        public DbSet<Specialty> Specialty { get; set; }
+        public DbSet<Service> Service { get; set; }
 
     }
 }

@@ -27,17 +27,21 @@
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="CategoryId" class="control-label"></label>
+                <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Category"></select>
+            </div>
+            <div class="form-group">
                 <label asp-for="Content" class="control-label"></label>
                 <textarea asp-for="Content" class="form-control" rows="3"></textarea>
                 <span asp-validation-for="Content" class="text-danger"></span>
             </div>
             <div class="form-row col-12">
                 <div class="form-group col-12">
-                    <label asp-for="imageLink" class="control-label"></label>
-                    <input asp-for="imageLink" id="uploadedImg"/>
-                    <input asp-for="imageName" id="imageName" />
+                    <label asp-for="ImageLink" class="control-label"></label>
+                    <input asp-for="ImageLink" id="uploadedImg" hidden/>
+                    <input asp-for="ImageName" id="imageName" hidden/>
                     <input type="file" id="image" class="form-control" />
-                    <span asp-validation-for="imageLink" class="text-danger"></span>
+                    <span asp-validation-for="ImageLink" class="text-danger"></span>
                     <span class="text-danger" hidden id="uploadImageError">Please choose an image for this blog.</span>
                 </div>
             </div>
@@ -57,8 +61,6 @@
     <!-- The core Firebase JS SDK is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script>
-    
-
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyAMp7UVQSjA7-RSRwkmkQrCt3U9d-2aLHo",
@@ -104,5 +106,6 @@
             firebase.storage().ref().child(fileLocation).delete();
         }
     </script>
+    
 
 }

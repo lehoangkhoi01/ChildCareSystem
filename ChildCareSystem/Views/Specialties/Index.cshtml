@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ChildCareSystem.Models.BlogCategory>
+﻿@model IEnumerable<ChildCareSystem.Models.Specialty>
 
 @{
     ViewData["Title"] = "Index";
@@ -14,7 +14,7 @@
     <thead>
         <tr>
             <th>
-                Category
+                @Html.DisplayNameFor(model => model.SpecialtyName)
             </th>
             <th></th>
         </tr>
@@ -23,7 +23,7 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.CategoryName)
+                @Html.DisplayFor(modelItem => item.SpecialtyName)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

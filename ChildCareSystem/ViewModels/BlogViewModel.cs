@@ -19,10 +19,15 @@ namespace ChildCareSystem.ViewModels
         [Required]
         public string Content { get; set; }
 
+        [Display(Name = "Category")]
+        public int CategoryId { get; set; }
+
+        public string AuthorId { get; set; }
+
         [Display(Name = "Image")]
         [Required]
-        public string imageLink { get; set; }
+        public string ImageLink { get; set; }
 
-        public string imageName { get; set; }
+        public string ImageName { get; set; }
     }
 }
