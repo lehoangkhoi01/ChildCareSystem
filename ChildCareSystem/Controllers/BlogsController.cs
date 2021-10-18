@@ -124,6 +124,7 @@ namespace ChildCareSystem.Controllers
             blogViewModel.CategoryId = blog.BlogCategoryId;
             blogViewModel.AuthorId = blog.AuthorId;
 
+
             return View(blogViewModel);
         }
 

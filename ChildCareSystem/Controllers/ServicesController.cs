@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ChildCareSystem.Data;
 using ChildCareSystem.Models;
+using ChildCareSystem.ViewModels;
+using Microsoft.Data.SqlClient;
 
 namespace ChildCareSystem.Controllers
 {
@@ -48,7 +50,7 @@ namespace ChildCareSystem.Controllers
         // GET: Services/Create
         public IActionResult Create()
         {
-            ViewData["SpecialtyId"] = new SelectList(_context.Specialty, "Id", "Id");
+            ViewData["Specialty"] = new SelectList(_context.Specialty, "Id", "SpecialtyName");
             return View();
         }
 
@@ -57,16 +59,31 @@ namespace ChildCareSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ServiceName,ThumbnailLink,Description,Price,SpecialtyId")] Service service)
+        public async Task<IActionResult> Create([Bind("Id,ServiceName,ImageLink,ImageName,Description,Price,SpecialtyId")] ServiceViewModel serviceViewModel)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(service);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    Service service = new Service
+                    {
+                        ServiceName = serviceViewModel.ServiceName,
+                        SpecialtyId = serviceViewModel.SpecialtyId,
+                        Description = serviceViewModel.Description,
+                        Price = serviceViewModel.Price,
+                        ThumbnailLink = serviceViewModel.ImageLink
+                    };
+                    _context.Add(service);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                } 
+                catch (DbUpdateException ex) when (ex.InnerException is SqlException sqlException && (sqlException.Number == 2627 || sqlException.Number == 2601))
+                {
+                    ViewBag.ErrorMessage = "This service's name is already existed.";
+                }               
             }
-            ViewData["SpecialtyId"] = new SelectList(_context.Specialty, "Id", "Id", service.SpecialtyId);
-            return View(service);
+            ViewData["Specialty"] = new SelectList(_context.Specialty.ToList(), "Id", "SpecialtyName", serviceViewModel.SpecialtyId);
+            return View(serviceViewModel);
         }
 
         // GET: Services/Edit/5
@@ -82,8 +99,17 @@ namespace ChildCareSystem.Controllers
             {
                 return NotFound();
             }
-            ViewData["SpecialtyId"] = new SelectList(_context.Specialty, "Id", "Id", service.SpecialtyId);
-            return View(service);
+            ServiceViewModel serviceViewModel = new ServiceViewModel
+            {
+                Id = service.Id,
+                ServiceName = service.ServiceName,
+                Description = service.Description,
+                Price = service.Price,
+                ImageLink = service.ThumbnailLink,
+                SpecialtyId = service.SpecialtyId,
+            };
+            ViewData["Specialty"] = new SelectList(_context.Specialty, "Id", "SpecialtyName", service.SpecialtyId);
+            return View(serviceViewModel);
         }
 
         // POST: Services/Edit/5
@@ -91,9 +117,10 @@ namespace ChildCareSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ServiceName,ThumbnailLink,Description,Price,SpecialtyId")] Service service)
+        public async Task<IActionResult> Edit(int id, 
+                                                [Bind("Id,ServiceName,ImageLink,ImageName,Description,Price,SpecialtyId")] ServiceViewModel serviceViewModel)
         {
-            if (id != service.Id)
+            if (id != serviceViewModel.Id)
             {
                 return NotFound();
             }
@@ -102,12 +129,21 @@ namespace ChildCareSystem.Controllers
             {
                 try
                 {
-                    _context.Update(service);
+                    Service service = new Service
+                    {
+                        ServiceName = serviceViewModel.ServiceName,
+                        SpecialtyId = serviceViewModel.SpecialtyId,
+                        Description = serviceViewModel.Description,
+                        Price = serviceViewModel.Price,
+                        ThumbnailLink = serviceViewModel.ImageLink
+                    };
+                    _context.Service.Update(service);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ServiceExists(service.Id))
+                    if (!ServiceExists(serviceViewModel.Id))
                     {
                         return NotFound();
                     }
@@ -116,10 +152,14 @@ namespace ChildCareSystem.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                catch (DbUpdateException ex) when (ex.InnerException is SqlException sqlException && (sqlException.Number == 2627 || sqlException.Number == 2601))
+                {
+                    ViewBag.ErrorMessage = "This service's name is already existed.";
+                }
+                
             }
-            ViewData["SpecialtyId"] = new SelectList(_context.Specialty, "Id", "Id", service.SpecialtyId);
-            return View(service);
+            ViewData["Specialty"] = new SelectList(_context.Specialty, "Id", "SpecialtyName", serviceViewModel.SpecialtyId);
+            return View(serviceViewModel);
         }
 
         // GET: Services/Delete/5

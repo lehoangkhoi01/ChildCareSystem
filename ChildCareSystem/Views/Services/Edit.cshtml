@@ -1,4 +1,4 @@
-﻿@model ChildCareSystem.Models.Service
+﻿@model ChildCareSystem.ViewModels.ServiceViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -6,41 +6,55 @@
 }
 
 <h1>Edit</h1>
-
+@if (!String.IsNullOrEmpty(ViewBag.ErrorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        @ViewBag.ErrorMessage
+    </div>
+    <script>
+        let status = 'failed'
+    </script>
+}
 <h4>Service</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" id="serviceForm">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
             <div class="form-group">
                 <label asp-for="ServiceName" class="control-label"></label>
                 <input asp-for="ServiceName" class="form-control" />
                 <span asp-validation-for="ServiceName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ThumbnailLink" class="control-label"></label>
-                <input asp-for="ThumbnailLink" class="form-control" />
-                <span asp-validation-for="ThumbnailLink" class="text-danger"></span>
+                <label asp-for="SpecialtyId" class="control-label"></label>
+                <select asp-for="SpecialtyId" class="form-control" asp-items="ViewBag.Specialty"></select>
             </div>
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="ImageLink" class="control-label"></label>(Optional)
+                    <input asp-for="ImageLink" id="uploadedImg" hidden />
+                    <input asp-for="ImageName" id="imageName" hidden/>
+                    <input type="file" id="image" class="form-control" />
+                    <span asp-validation-for="ImageLink" class="text-danger"></span>
+                    <span class="text-danger" hidden id="uploadImageError">Please choose an image for this blog.</span>
+                </div>
+            </div>
+
             <div class="form-group">
                 <label asp-for="Price" class="control-label"></label>
                 <input asp-for="Price" class="form-control" />
                 <span asp-validation-for="Price" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="SpecialtyId" class="control-label"></label>
-                <select asp-for="SpecialtyId" class="form-control" asp-items="ViewBag.SpecialtyId"></select>
-                <span asp-validation-for="SpecialtyId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <button class="btn btn-primary col-md-4 mb-3" type="button" onclick="updateItem('@Model.ImageLink')">Update</button>
             </div>
         </form>
     </div>
@@ -52,4 +66,56 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAMp7UVQSjA7-RSRwkmkQrCt3U9d-2aLHo",
+            authDomain: "child-care-system-fa552.firebaseapp.com",
+            databaseURL: "https://child-care-system-fa552-default-rtdb.firebaseio.com",
+            projectId: "child-care-system-fa552",
+            storageBucket: "child-care-system-fa552.appspot.com",
+            messagingSenderId: "405468541919",
+            appId: "1:405468541919:web:7a5f896edfa5d16d318a6a",
+            measurementId: "G-GNZMSFGYBX"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+    </script>
+    <script>
+        function updateItem(oldUrl) {
+            const ref = firebase.storage().ref("images/service");
+            const file = document.querySelector("#image").files[0];
+            if (file != null) {
+                const metadata = {
+                    contentType: file.type
+                };
+                const name = file.name;
+                $("#imageName").val(name);
+                const uploadIMG = ref.child(name).put(file, metadata);
+                uploadIMG
+                    .then(snapshot => snapshot.ref.getDownloadURL())
+                    .then(url => {
+                        $("#uploadedImg").val(url);
+                        $("#serviceForm").submit();
+                    })
+                    .catch(console.error)
+            } else {
+                $("#uploadedImg").val(oldUrl);
+                $("#serviceForm").submit();
+            }
+        }
+    </script>
+    <script>
+        if (status === 'failed') {
+            var imageName = document.getElementById("imageName").value;
+            if (imageName) {
+                var fileLocation = "images/service/" + imageName;
+                firebase.storage().ref().child(fileLocation).delete();
+            }   
+        }
+        
+    </script>
+
 }

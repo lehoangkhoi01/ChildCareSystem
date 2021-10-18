@@ -17,7 +17,7 @@
                 @Html.DisplayNameFor(model => model.ServiceName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ThumbnailLink)
+                Image
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Description)
@@ -26,7 +26,7 @@
                 @Html.DisplayNameFor(model => model.Price)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Specialty)
+                Specialty
             </th>
             <th></th>
         </tr>
@@ -38,7 +38,7 @@
                 @Html.DisplayFor(modelItem => item.ServiceName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ThumbnailLink)
+                <img src="@item.ThumbnailLink" width="80" height="80"/>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Description)

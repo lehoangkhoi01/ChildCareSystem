@@ -44,6 +44,8 @@ namespace ChildCareSystem.Data
             {
                 entity.ToTable(name: "RoleClaims");
             });
+            builder.Entity<Service>()
+                .HasIndex(s => s.ServiceName).IsUnique();
 
         }
 
