@@ -4,14 +4,16 @@ using ChildCareSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ChildCareSystem.Migrations
 {
     [DbContext(typeof(ChildCareSystemContext))]
-    partial class ChildCareSystemContextModelSnapshot : ModelSnapshot
+    [Migration("20211019031311_AddPatientTable")]
+    partial class AddPatientTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -136,6 +138,37 @@ namespace ChildCareSystem.Migrations
                     b.ToTable("BlogCategory");
                 });
 
+            modelBuilder.Entity("ChildCareSystem.Models.Patient", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("Birthdate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CustomerId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("Gender")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PatientName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("StatusId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("StatusId");
+
+                    b.ToTable("Patient");
+                });
+
             modelBuilder.Entity("ChildCareSystem.Models.Service", b =>
                 {
                     b.Property<int>("Id")
@@ -182,6 +215,21 @@ namespace ChildCareSystem.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Specialty");
+                });
+
+            modelBuilder.Entity("ChildCareSystem.Models.Status", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("StatusName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Status");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -330,6 +378,23 @@ namespace ChildCareSystem.Migrations
                     b.Navigation("BlogCategory");
 
                     b.Navigation("ChildCareSystemUser");
+                });
+
+            modelBuilder.Entity("ChildCareSystem.Models.Patient", b =>
+                {
+                    b.HasOne("ChildCareSystem.Areas.Identity.Data.ChildCareSystemUser", "ChildCareSystemUser")
+                        .WithMany()
+                        .HasForeignKey("CustomerId");
+
+                    b.HasOne("ChildCareSystem.Models.Status", "Status")
+                        .WithMany()
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ChildCareSystemUser");
+
+                    b.Navigation("Status");
                 });
 
             modelBuilder.Entity("ChildCareSystem.Models.Service", b =>

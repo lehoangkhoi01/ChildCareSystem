@@ -9,6 +9,7 @@ using ChildCareSystem.Data;
 using ChildCareSystem.Models;
 using ChildCareSystem.ViewModels;
 using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ChildCareSystem.Controllers
 {
@@ -48,6 +49,7 @@ namespace ChildCareSystem.Controllers
         }
 
         // GET: Services/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["Specialty"] = new SelectList(_context.Specialty, "Id", "SpecialtyName");
@@ -57,6 +59,7 @@ namespace ChildCareSystem.Controllers
         // POST: Services/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,ServiceName,ImageLink,ImageName,Description,Price,SpecialtyId")] ServiceViewModel serviceViewModel)
@@ -87,6 +90,7 @@ namespace ChildCareSystem.Controllers
         }
 
         // GET: Services/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -115,6 +119,7 @@ namespace ChildCareSystem.Controllers
         // POST: Services/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, 
@@ -163,6 +168,7 @@ namespace ChildCareSystem.Controllers
         }
 
         // GET: Services/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -182,6 +188,7 @@ namespace ChildCareSystem.Controllers
         }
 
         // POST: Services/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

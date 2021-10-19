@@ -1,0 +1,77 @@
+﻿@model IEnumerable<ChildCareSystem.Models.Patient>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+@if (!String.IsNullOrEmpty(ViewBag.MAX_PATIENT_ERROR))
+{
+    <div class="alert alert-danger" role="alert">
+        @ViewBag.MAX_PATIENT_ERROR
+    </div>
+}
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Patient Name
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Gender)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Birthdate)
+            </th>
+            <th>
+                Customer
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PatientName)
+                </td>
+                <td>
+                    @if (item.Gender)
+                    {
+                        <span>Male</span>
+                    }
+                    else
+                    {
+                        <span>Female</span>
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Birthdate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ChildCareSystemUser.FullName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status.StatusName)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <form asp-action="Delete" method="post">
+                        <input type="hidden" value="@item.Id" name="id" />
+                        <button class="btn btn-danger" type="submit">Delete</button>
+                    </form>
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
