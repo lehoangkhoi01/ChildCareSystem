@@ -53,6 +53,8 @@ namespace ChildCareSystem.Data
         public DbSet<BlogCategory> BlogCategory { get; set; }
         public DbSet<Specialty> Specialty { get; set; }
         public DbSet<Service> Service { get; set; }
+        public DbSet<Status> Status { get; set; }
+        public DbSet<Patient> Patient { get; set; }
 
     }
 }
