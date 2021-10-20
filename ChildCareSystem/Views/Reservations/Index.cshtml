@@ -1,0 +1,55 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="reservation-wrapper px-5 py-5">
+    <h2 class="mb-4">Đặt chỗ khám bệnh</h2>
+    <div class="form-row col-12 reservation-top pb-4">
+        <div class="col-4 left-section">
+            <h4>Patient profiles</h4>
+            @if (ViewBag.PatientCount > 0)
+            {
+                <div class="list-group patientProfile" id="list-tab" role="tablist">
+                    @foreach (var patient in ViewBag.PatientList)
+                    {
+                        <a class="card list-group-item list-group-item-action" id="@patient.Id" data-toggle="list" href="#" role="tab">
+                            <div class="card-body">
+                                <h5 class="card-title"><strong>@patient.PatientName</strong></h5>
+                                <div class="patientId" hidden>@patient.Id</div>
+                                <input type="hidden" value="@patient.Id" name="txtPatientId" />
+                                <p class="card-text">
+                                    <strong>Gender:</strong>
+                                    @if (patient.Gender)
+                                    {
+                                        <span>Male</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Female</span>
+                                    }
+                                </p>
+                                <p class="card-text">
+                                    <strong>Birthdate:</strong> @patient.Birthdate.ToString("dd-MM-yyyy")
+                                </p>
+                            </div>
+                        </a>
+                    }
+                    <a href="#" class="text-center my-3 addPatientLink">Thêm mới hồ sơ</a>
+                    <div class="alert alert-danger my-3" id="patientError" role="alert" hidden>
+                        Chưa chọn hồ sơ bệnh nhân
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="mb-5">
+                    <h5 style="margin-top: 40%">Chưa có hồ sơ bệnh nhân</h5>
+                    <small>(Bạn cần hồ sơ bệnh nhân để đặt dịch vụ)</small>
+                </div>
+                <a href="#" class="text-center my-3 addPatientLink">Thêm mới hồ sơ</a>
+            }
+
+        </div>
+    </div>
+</div>

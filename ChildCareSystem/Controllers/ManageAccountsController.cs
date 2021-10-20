@@ -1,6 +1,7 @@
 ﻿using ChildCareSystem.Areas.Identity.Data;
 using ChildCareSystem.Data;
 using ChildCareSystem.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace ChildCareSystem.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class ManageAccountsController : Controller
     {
         private readonly ChildCareSystemContext _context;
