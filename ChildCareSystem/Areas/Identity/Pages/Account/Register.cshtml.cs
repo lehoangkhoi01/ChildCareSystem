@@ -77,7 +77,6 @@ namespace ChildCareSystem.Areas.Identity.Pages.Account
             public string PhoneNumber { get; set; }
 
             public string RoleAssigned { get; set; }
-
             
             public string SpecialtyId { get; set; }
         }
