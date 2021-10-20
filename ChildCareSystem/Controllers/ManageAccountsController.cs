@@ -30,8 +30,23 @@ namespace ChildCareSystem.Controllers
 
         public async Task<IActionResult> Index()
         {
+            var userList = await _context.Users.ToListAsync();
+            List<AccountWithRoleViewModel> accountList = new List<AccountWithRoleViewModel>();
+            foreach(var user in userList)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                AccountWithRoleViewModel account = new AccountWithRoleViewModel
+                {
+                    Email = user.Email,
+                    FullName = user.FullName,
+                    Address = user.Address,
+                    PhoneNumber = user.PhoneNumber,
+                    RoleName = roles[0]
+                };
+                accountList.Add(account);
+            }
             
-            return View();
+            return View(accountList);
         }
 
         
