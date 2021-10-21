@@ -30,7 +30,7 @@ namespace ChildCareSystem.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
         }
-        public IActionResult Index(bool? serviceBusy, bool? duplicated)
+        public IActionResult Index(bool? serviceBusy, bool? duplicated, bool? invalidTime)
         {
             var patientProfileList = _context.Patient.Where(p =>
                                             p.CustomerId == User.FindFirstValue(ClaimTypes.NameIdentifier)
@@ -47,11 +47,15 @@ namespace ChildCareSystem.Controllers
 
             if(serviceBusy != null && serviceBusy == true)
             {
-                ViewBag.FREE_STAFF_ERROR = "You can not make reservation for service in chosen time. Try to change time or date.";         
+                ViewBag.ERROR = "You can not make reservation for service in chosen time. Try to change time or date.";         
             } 
             else if (duplicated != null && duplicated == true)
             {
-                ViewBag.DUPLICATED = "You have already make medical reservation for this patient in chosen time.";
+                ViewBag.ERROR = "You have already make medical reservation for this patient in chosen time.";
+            }
+            else if (invalidTime != null && invalidTime == true)
+            {
+                ViewBag.ERROR = "You must make reservation for service before at least 1 hour.";
             }
             return View();
         }
@@ -63,6 +67,14 @@ namespace ChildCareSystem.Controllers
             string staffAssignedId = "";
             var dateString = dateReservation + " " + timeReservation;
             DateTime dateTime = DateTime.ParseExact(dateString, "dd-MM-yyyy HH:mm", CultureInfo.CurrentCulture);
+
+
+            //Check validate datetime (must before at the moment at least 1 hour)
+            var timeDiff = (dateTime - DateTime.Now).TotalHours;
+            if (timeDiff < 1)
+            {
+                return RedirectToAction(nameof(Index), new { invalidTime = true });
+            }
 
             //Check duplicate reservation (same patient id and datetime)
             var duplicateReservation = await _context.Reservations.FirstOrDefaultAsync(u =>
@@ -108,7 +120,6 @@ namespace ChildCareSystem.Controllers
                 ServiceId = serviceId,
                 PatientId = patientId,
                 CheckInDate = dateTime,
-                TimeAvailableId = 1,
                 Price = service.Price,
                 StaffAssignedId = staffAssignedId
             };
@@ -116,6 +127,41 @@ namespace ChildCareSystem.Controllers
             await _context.SaveChangesAsync();
 
             return View();
+        }
+    
+        public async Task<IActionResult> GetCustomerReservationsList(bool? invalidDelete)
+        {
+            var reservationList = _context.Reservations.Where(r => r.CustomerId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+                                                        .Include(u => u.Service)
+                                                        .Include(u => u.ChildCareSystemUser)
+                                                        .Include(u => u.ChildCareSystemStaff)
+                                                        .Include(u => u.Patient);
+
+            if(invalidDelete != null && invalidDelete == true)
+            {
+                ViewBag.ERROR = "You can only cancel your reservation before at least 1 hour";
+            }
+            return View("List", await reservationList.ToListAsync());
+
+
+        }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            var reservation = await _context.Reservations.FindAsync(id);
+            
+            if(reservation != null)
+            {
+                var timeDiff = (reservation.CheckInDate - DateTime.Now).TotalHours;
+                if(timeDiff < 1)
+                {
+                    return RedirectToAction(nameof(GetCustomerReservationsList), 
+                                            new { invalidDelete = true});
+                }
+                _context.Reservations.Remove(reservation);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(GetCustomerReservationsList));
         }
     }
 }

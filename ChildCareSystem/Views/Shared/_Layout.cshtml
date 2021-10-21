@@ -64,8 +64,15 @@
                         <li class="nav-item px-3">
                             <a class="nav-link" asp-area="" asp-controller="Patients" asp-action="Index">Patient</a>
                         </li>
-                        <li class="nav-item px-3">
-                            <a class="nav-link" asp-area="" asp-controller="Reservations" asp-action="Index">Reservation</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Reservations
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" asp-area="" asp-controller="Reservations" asp-action="Index">Make Reservation</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" asp-area="" asp-controller="Reservations" asp-action="GetCustomerReservationsList">List</a>
+                            </div>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

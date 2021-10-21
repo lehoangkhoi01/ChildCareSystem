@@ -21,9 +21,7 @@ namespace ChildCareSystem.Models
         public int PatientId { get; set; }
         public Patient Patient { get; set; }
 
-        [ForeignKey("Id")]
-        public int TimeAvailableId { get; set; }
-        public TimeAvailable TimeAvailable { get; set; }
+        
 
         public string StaffAssignedId { get; set; }
         [ForeignKey("StaffAssignedId")]

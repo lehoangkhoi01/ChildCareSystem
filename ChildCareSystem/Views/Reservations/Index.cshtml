@@ -4,18 +4,13 @@
 }
 
 
-@if (!String.IsNullOrEmpty(ViewBag.FREE_STAFF_ERROR))
+@if (!String.IsNullOrEmpty(ViewBag.ERROR))
 {
     <div class="alert alert-danger" role="alert">
-        @ViewBag.FREE_STAFF_ERROR
+        @ViewBag.ERROR
     </div>
 }
-@if (!String.IsNullOrEmpty(ViewBag.DUPLICATED))
-{
-    <div class="alert alert-danger" role="alert">
-        @ViewBag.DUPLICATED
-    </div>
-}
+
 <div class="reservation-wrapper px-5 py-5">
     <h2 class="mb-4">Đặt chỗ khám bệnh</h2>
     <div class="form-row col-12 reservation-top pb-4">
