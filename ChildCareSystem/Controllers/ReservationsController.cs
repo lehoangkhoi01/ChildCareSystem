@@ -1,10 +1,14 @@
 ﻿using ChildCareSystem.Areas.Identity.Data;
 using ChildCareSystem.Data;
+using ChildCareSystem.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -26,15 +30,91 @@ namespace ChildCareSystem.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
         }
-        public IActionResult Index()
+        public IActionResult Index(bool? serviceBusy, bool? duplicated)
         {
             var patientProfileList = _context.Patient.Where(p =>
-                                            p.CustomerId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+                                            p.CustomerId == User.FindFirstValue(ClaimTypes.NameIdentifier)
+                                            && p.StatusId == 2)
                                                       .ToList();
 
             var profileCount = patientProfileList.Count();
+
+            var timeAvailableList = _context.TimeAvailable.ToList();
             ViewBag.PatientList = patientProfileList;
             ViewBag.PatientCount = profileCount;
+            ViewBag.TimeList = timeAvailableList;
+            ViewData["Service"] = new SelectList(_context.Service, "Id", "ServiceName");
+
+            if(serviceBusy != null && serviceBusy == true)
+            {
+                ViewBag.FREE_STAFF_ERROR = "You can not make reservation for service in chosen time. Try to change time or date.";         
+            } 
+            else if (duplicated != null && duplicated == true)
+            {
+                ViewBag.DUPLICATED = "You have already make medical reservation for this patient in chosen time.";
+            }
+            return View();
+        }
+
+
+        [HttpPost]
+        public async  Task<IActionResult> Create([FromForm] string dateReservation, string timeReservation, int patientId, int serviceId)
+        {
+            string staffAssignedId = "";
+            var dateString = dateReservation + " " + timeReservation;
+            DateTime dateTime = DateTime.ParseExact(dateString, "dd-MM-yyyy HH:mm", CultureInfo.CurrentCulture);
+
+            //Check duplicate reservation (same patient id and datetime)
+            var duplicateReservation = await _context.Reservations.FirstOrDefaultAsync(u =>
+                                                                                            u.CheckInDate == dateTime
+                                                                                            && u.PatientId == patientId);
+
+            if(duplicateReservation != null)
+            {
+                return RedirectToAction(nameof(Index), new { duplicated = true });
+            }
+
+            // Get service by service id
+            var service = await _context.Service
+                .FirstOrDefaultAsync(m => m.Id == serviceId); 
+
+            //Get list of staff by service
+            var staffListByService = _context.UserClaims.Where(s => s.ClaimType == "SpecialtyId"
+                                                               && s.ClaimValue == service.SpecialtyId.ToString());
+            
+
+            foreach(var item in staffListByService)
+            {
+                var existedAssigned = await _context.Reservations.FirstOrDefaultAsync(r => r.StaffAssignedId == item.UserId
+                                                                                && r.CheckInDate == dateTime);
+                if (existedAssigned == null) 
+                {
+                    // Found free staff for service in chosen time
+                    staffAssignedId = item.UserId;
+                    break;
+                } 
+                
+            }
+
+            if(String.IsNullOrEmpty(staffAssignedId))
+            {
+                //Can not find free staff             
+                return RedirectToAction(nameof(Index), new { serviceBusy = true});
+            }
+
+            Reservation newReservation = new Reservation
+            {
+                CustomerId = User.FindFirstValue(ClaimTypes.NameIdentifier),
+                ServiceId = serviceId,
+                PatientId = patientId,
+                CheckInDate = dateTime,
+                TimeAvailableId = 1,
+                Price = service.Price,
+                StaffAssignedId = staffAssignedId
+            };
+            await _context.Reservations.AddAsync(newReservation);
+            await _context.SaveChangesAsync();
+
             return View();
         }
     }
