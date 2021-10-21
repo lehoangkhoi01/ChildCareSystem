@@ -55,6 +55,8 @@ namespace ChildCareSystem.Data
         public DbSet<Service> Service { get; set; }
         public DbSet<Status> Status { get; set; }
         public DbSet<Patient> Patient { get; set; }
+        public DbSet<Reservation> Reservations { get; set; }
+        public DbSet<TimeAvailable> TimeAvailable { get; set; }
 
-    }
+     }
 }
