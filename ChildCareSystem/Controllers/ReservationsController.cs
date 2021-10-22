@@ -129,7 +129,7 @@ namespace ChildCareSystem.Controllers
             return View();
         }
     
-        public async Task<IActionResult> GetCustomerReservationsList(bool? invalidDelete)
+        public async Task<IActionResult> GetCustomerReservationsList(bool? invalidDelete, bool? feedbackError)
         {
             var reservationList = _context.Reservations.Where(r => r.CustomerId == User.FindFirstValue(ClaimTypes.NameIdentifier))
                                                         .Include(u => u.Service)
@@ -140,6 +140,10 @@ namespace ChildCareSystem.Controllers
             if(invalidDelete != null && invalidDelete == true)
             {
                 ViewBag.ERROR = "You can only cancel your reservation before at least 1 hour";
+            } 
+            else if (feedbackError != null && feedbackError == true)
+            {
+                ViewBag.ERROR = "You can only give feedback about our service at least 1 hour after check in time. ";
             }
             return View("List", await reservationList.ToListAsync());
 

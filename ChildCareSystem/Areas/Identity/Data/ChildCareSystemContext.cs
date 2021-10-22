@@ -46,6 +46,11 @@ namespace ChildCareSystem.Data
             });
             builder.Entity<Service>()
                 .HasIndex(s => s.ServiceName).IsUnique();
+            builder.Entity<Feedback>()
+                .HasOne(e => e.Service)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
+
 
         }
 
@@ -57,6 +62,6 @@ namespace ChildCareSystem.Data
         public DbSet<Patient> Patient { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<TimeAvailable> TimeAvailable { get; set; }
-
-     }
+        public DbSet<Feedback> Feedback { get; set; }
+    }
 }

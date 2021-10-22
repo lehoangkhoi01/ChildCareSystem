@@ -51,7 +51,8 @@
                     @Html.DisplayFor(modelItem => item.Price)
                 </td>
                 <td>
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>|
+                    <a asp-controller="Feedbacks" asp-action="Create" asp-route-reservationId="@item.Id">Feedback</a>
                 </td>
             </tr>
         }
