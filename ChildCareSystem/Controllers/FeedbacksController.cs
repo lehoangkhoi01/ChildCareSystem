@@ -127,9 +127,20 @@ namespace ChildCareSystem.Controllers
             {
                 return NotFound();
             }
-            ViewData["CustomerId"] = new SelectList(_context.Users, "Id", "Id", feedback.CustomerId);
-            ViewData["ReservationId"] = new SelectList(_context.Reservations, "Id", "Id", feedback.ReservationId);
-            ViewData["ServiceId"] = new SelectList(_context.Service, "Id", "Id", feedback.ServiceId);
+
+
+            // Get reservation info
+            var reservation = await _context.Reservations.Include(u => u.Service)
+                                                         .Include(u => u.Patient)
+                                                         .Include(u => u.ChildCareSystemStaff)
+                                                         .Include(u => u.ChildCareSystemUser)
+                                                         .FirstOrDefaultAsync(u => u.Id == feedback.ReservationId);
+            if (reservation == null || reservation.CustomerId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+            {
+                return NotFound();
+            }
+            ViewBag.ReservationInfo = reservation;
+
             return View(feedback);
         }
 
