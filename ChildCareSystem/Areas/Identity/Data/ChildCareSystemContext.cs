@@ -50,8 +50,6 @@ namespace ChildCareSystem.Data
                 .HasOne(e => e.Service)
                 .WithMany()
                 .OnDelete(DeleteBehavior.Restrict);
-
-
         }
 
         public DbSet<Blog> Blog { get; set; }

@@ -139,7 +139,7 @@ namespace ChildCareSystem.Controllers
             {
                 return NotFound();
             }
-            ViewBag.ReservationInfo = reservation;
+
 
             return View(feedback);
         }
@@ -176,9 +176,6 @@ namespace ChildCareSystem.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CustomerId"] = new SelectList(_context.Users, "Id", "Id", feedback.CustomerId);
-            ViewData["ReservationId"] = new SelectList(_context.Reservations, "Id", "Id", feedback.ReservationId);
-            ViewData["ServiceId"] = new SelectList(_context.Service, "Id", "Id", feedback.ServiceId);
             return View(feedback);
         }
 

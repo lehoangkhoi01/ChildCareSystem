@@ -66,7 +66,14 @@ namespace ChildCareSystem.Controllers
         {
             if (ModelState.IsValid)
             {
-                try
+
+                var serviceObj = await _context.Service
+               .FirstOrDefaultAsync(b => b.ServiceName.Trim().ToUpper() == serviceViewModel.ServiceName.Trim().ToUpper());
+                if (serviceObj != null)
+                {
+                    ViewBag.ErrorMessage = "This service is already existed.";
+                }
+                else
                 {
                     Service service = new Service
                     {
@@ -79,11 +86,10 @@ namespace ChildCareSystem.Controllers
                     _context.Add(service);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
-                } 
-                catch (DbUpdateException ex) when (ex.InnerException is SqlException sqlException && (sqlException.Number == 2627 || sqlException.Number == 2601))
-                {
-                    ViewBag.ErrorMessage = "This service's name is already existed.";
-                }               
+                }
+
+
+
             }
             ViewData["Specialty"] = new SelectList(_context.Specialty.ToList(), "Id", "SpecialtyName", serviceViewModel.SpecialtyId);
             return View(serviceViewModel);
@@ -134,17 +140,33 @@ namespace ChildCareSystem.Controllers
             {
                 try
                 {
-                    Service service = new Service
-                    {
-                        ServiceName = serviceViewModel.ServiceName,
-                        SpecialtyId = serviceViewModel.SpecialtyId,
-                        Description = serviceViewModel.Description,
-                        Price = serviceViewModel.Price,
-                        ThumbnailLink = serviceViewModel.ImageLink
-                    };
-                    _context.Service.Update(service);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
+                    //List<Service> listService = await _context.Service.ToListAsync();
+                    //listService.RemoveAll(c => c.Id == serviceViewModel.Id);
+                    //var serviceDuplicate = listService
+                    //                   .FirstOrDefault(b => b.ServiceName.Trim().ToUpper() == serviceViewModel.ServiceName.Trim().ToUpper());
+                    
+                    //if (serviceDuplicate != null)
+                    //{
+                    //    ViewBag.ErrorMessage = "This service's name is already existed."; 
+                    //    ViewData["Specialty"] = new SelectList(_context.Specialty, "Id", "SpecialtyName", serviceViewModel.SpecialtyId);
+                    //}
+                    //else
+                    //{
+                    //    _context.ChangeTracker.Clear();
+                        Service service = new Service
+                        {
+                            Id = serviceViewModel.Id,
+                            ServiceName = serviceViewModel.ServiceName,
+                            SpecialtyId = serviceViewModel.SpecialtyId,
+                            Description = serviceViewModel.Description,
+                            Price = serviceViewModel.Price,
+                            ThumbnailLink = serviceViewModel.ImageLink
+                        };
+                        
+                        _context.Service.Update(service);
+                        await _context.SaveChangesAsync();
+                        return RedirectToAction(nameof(Index));
+                    //}                   
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -161,7 +183,6 @@ namespace ChildCareSystem.Controllers
                 {
                     ViewBag.ErrorMessage = "This service's name is already existed.";
                 }
-                
             }
             ViewData["Specialty"] = new SelectList(_context.Specialty, "Id", "SpecialtyName", serviceViewModel.SpecialtyId);
             return View(serviceViewModel);

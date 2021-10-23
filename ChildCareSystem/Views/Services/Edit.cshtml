@@ -32,7 +32,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
-                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                <textarea asp-for="Description" class="form-control" rows="3" id="service-content"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
 
@@ -40,7 +40,7 @@
                 <div class="form-group">
                     <label asp-for="ImageLink" class="control-label"></label>(Optional)
                     <input asp-for="ImageLink" id="uploadedImg" hidden />
-                    <input asp-for="ImageName" id="imageName" hidden/>
+                    <input asp-for="ImageName" id="imageName" hidden />
                     <input type="file" id="image" class="form-control" />
                     <span asp-validation-for="ImageLink" class="text-danger"></span>
                     <span class="text-danger" hidden id="uploadImageError">Please choose an image for this blog.</span>
@@ -113,9 +113,26 @@
             if (imageName) {
                 var fileLocation = "images/service/" + imageName;
                 firebase.storage().ref().child(fileLocation).delete();
-            }   
+            }
         }
-        
+
+    </script>
+
+    <script src="https://cdn.tiny.cloud/1/2t4he0yxbmprjqhk0y813ygaxy9y5u0mjixyrmjobarrfcvj/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+        tinymce.init({
+            selector: 'textarea#service-content',
+            skin: 'bootstrap',
+            plugins: 'lists, link, image, media',
+            toolbar: 'h1 h2 bold italic strikethrough blockquote bullist numlist backcolor | link image media | removeformat help',
+            menubar: false
+        });
+    </script>
+    <script>
+        tinymce.init({
+            selector: 'textarea#service-content',
+            menubar: false
+        });
     </script>
 
 }
