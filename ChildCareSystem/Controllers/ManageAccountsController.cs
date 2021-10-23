@@ -32,7 +32,7 @@ namespace ChildCareSystem.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var userList = await _context.Users.ToListAsync();
+            var userList = await _context.Users.Skip(0 * 5).Take(5).ToListAsync();
             List<AccountWithRoleViewModel> accountList = new List<AccountWithRoleViewModel>();
             foreach(var user in userList)
             {

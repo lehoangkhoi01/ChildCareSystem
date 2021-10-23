@@ -1,0 +1,88 @@
+﻿@model ChildCareSystem.Models.Feedback
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Edit</h1>
+
+<h4>Feedback</h4>
+<div>Service: @ViewBag.ReservationInfo.Service.ServiceName</div>
+<div>Patient: @ViewBag.ReservationInfo.Patient.PatientName</div>
+<div>Date: @ViewBag.ReservationInfo.CheckInDate</div>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" id="feedbackForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="rating-section mt-5 col-12">
+                <span onmouseover="starmark(this)"
+                      onclick="starmark(this)"
+                      id="1one"
+                      style="font-size: 25px; cursor: pointer"
+                      class="fa fa-star checked"></span>
+                <span onmouseover="starmark(this)"
+                      onclick="starmark(this)"
+                      id="2one"
+                      style="font-size: 25px; cursor: pointer"
+                      class="fa fa-star"></span>
+                <span onmouseover="starmark(this)"
+                      onclick="starmark(this)"
+                      id="3one"
+                      style="font-size: 25px; cursor: pointer"
+                      class="fa fa-star"></span>
+                <span onmouseover="starmark(this)"
+                      onclick="starmark(this)"
+                      id="4one"
+                      style="font-size: 25px; cursor: pointer"
+                      class="fa fa-star"></span>
+                <span onmouseover="starmark(this)"
+                      onclick="starmark(this)"
+                      id="5one"
+                      style="font-size: 25px; cursor: pointer"
+                      class="fa fa-star"></span><br>
+                @if (!String.IsNullOrEmpty(ViewBag.RATE_ERROR))
+                {
+                    <div class="alert alert-danger" role="alert">
+                        @ViewBag.RATE_ERROR
+                    </div>
+                }
+            </div>
+            <input asp-for="Rate" class="form-control" hidden id="ratePoint" />
+
+            <div class="form-group">
+                <label asp-for="Comment" class="control-label"></label>
+                <textarea asp-for="Comment" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Comment" class="text-danger"></span>
+            </div>
+
+            <input asp-for="ServiceId" value="@ViewBag.ReservationInfo.Service.Id" hidden />
+            <input asp-for="ReservationId" value="@ViewBag.ReservationInfo.Id" hidden />
+            <div class="form-group">
+                <button class="btn btn-primary col-md-4" type="submit">
+                    Update
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/feedback/feedback.js"></script>
+    <script>
+        count = $("#ratePoint").val();
+        for (var i = 0; i < 5; i++) {
+            if (i < count) {
+                document.getElementById(i + 1 + "one").style.color = "#fed330";
+            } else {
+                document.getElementById(i + 1 + "one").style.color = "black";
+            }
+        }
+    </script>
+}

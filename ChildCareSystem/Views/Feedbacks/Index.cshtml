@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ChildCareSystem.Models.Service>
+﻿@model IEnumerable<ChildCareSystem.Models.Feedback>
 
 @{
     ViewData["Title"] = "Index";
@@ -14,17 +14,19 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.ServiceName)
+                @Html.DisplayNameFor(model => model.Rate)
             </th>
             <th>
-                Image
-            </th>
-            
-            <th>
-                @Html.DisplayNameFor(model => model.Price)
+                @Html.DisplayNameFor(model => model.Comment)
             </th>
             <th>
-                Specialty
+                @Html.DisplayNameFor(model => model.Service)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Reservation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ChildCareSystemUser)
             </th>
             <th></th>
         </tr>
@@ -33,17 +35,19 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.ServiceName)
+                @Html.DisplayFor(modelItem => item.Rate)
             </td>
             <td>
-                <img src="@item.ThumbnailLink" width="80" height="80"/>
-            </td>
-            
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
+                @Html.DisplayFor(modelItem => item.Comment)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Specialty.Id)
+                @Html.DisplayFor(modelItem => item.Service.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Reservation.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ChildCareSystemUser.Id)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
