@@ -5,31 +5,28 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Edit</h1>
-@if (!String.IsNullOrEmpty(ViewBag.ErrorMessage))
-{
-    <div class="alert alert-danger" role="alert">
-        @ViewBag.ErrorMessage
-    </div>
-    <script>
-        let status = 'failed'
-    </script>
-}
-<h4>Service</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit" id="serviceForm">
+<div class="loader hidden">
+    <img src="~/images/loading.gif" alt="Loading..." />
+</div>
+
+<div class="service-form-wrapper px-5 py-3">
+    <div class="form-wrapper col-12 col-lg-7">
+        <h2 class="text-center">Edit service information</h2>
+        <form asp-action="Edit" id="serviceForm" class="col-12">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="ServiceName" class="control-label"></label>
-                <input asp-for="ServiceName" class="form-control" />
-                <span asp-validation-for="ServiceName" class="text-danger"></span>
+            <div class="form-row">
+                <div class="form-group col-12 col-lg-6">
+                    <label class="control-label">Service name</label>
+                    <input asp-for="ServiceName" class="form-control" />
+                    <span asp-validation-for="ServiceName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-12 col-lg-6">
+                    <label asp-for="SpecialtyId" class="control-label"></label>
+                    <select asp-for="SpecialtyId" class="form-control" asp-items="ViewBag.Specialty"></select>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="SpecialtyId" class="control-label"></label>
-                <select asp-for="SpecialtyId" class="form-control" asp-items="ViewBag.Specialty"></select>
-            </div>
+
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
                 <textarea asp-for="Description" class="form-control" rows="3" id="service-content"></textarea>
@@ -37,8 +34,13 @@
             </div>
 
             <div class="form-row">
-                <div class="form-group">
-                    <label asp-for="ImageLink" class="control-label"></label>(Optional)
+                <div class="form-group col-12 col-lg-6">
+                    <label asp-for="Price" class="control-label"></label>
+                    <input asp-for="Price" class="form-control" />
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+                <div class="form-group col-12 col-lg-6">
+                    <label asp-for="ImageLink" class="control-label"></label> (Optional)
                     <input asp-for="ImageLink" id="uploadedImg" hidden />
                     <input asp-for="ImageName" id="imageName" hidden />
                     <input type="file" id="image" class="form-control" />
@@ -46,23 +48,32 @@
                     <span class="text-danger" hidden id="uploadImageError">Please choose an image for this blog.</span>
                 </div>
             </div>
-
-            <div class="form-group">
-                <label asp-for="Price" class="control-label"></label>
-                <input asp-for="Price" class="form-control" />
-                <span asp-validation-for="Price" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <button class="btn btn-primary col-md-4 mb-3" type="button" onclick="updateItem('@Model.ImageLink')">Update</button>
+            <div class="text-center">
+                <button class="btn btn-primary col-md-4 mb-3" id="updateButton" type="button" onclick="updateItem('@Model.ImageLink')">Update</button>
             </div>
         </form>
+        @if (!String.IsNullOrEmpty(ViewBag.ErrorMessage))
+        {
+            <div class="alert alert-danger" role="alert">
+                @ViewBag.ErrorMessage
+            </div>
+            <script>
+                let status = 'failed'
+            </script>
+        }
     </div>
+    <div class="image-wrapper mb-3 col-12 col-lg-5">
+        <img src="@Model.ImageLink" />
+    </div>
+
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
+@section Styles {
+    <link href="@Url.Content("~/css/service/edit.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/css/common/loading.css")" rel="stylesheet" type="text/css" />
+}
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
@@ -85,6 +96,11 @@
     </script>
     <script>
         function updateItem(oldUrl) {
+            //Disable button after click
+            $("#updateButton").addClass("disbaled");
+            $("#updateButton").attr("disbaled", true);
+            setTimeout(() => $(".loader").removeClass("hidden"), 1000);
+
             const ref = firebase.storage().ref("images/service");
             const file = document.querySelector("#image").files[0];
             if (file != null) {

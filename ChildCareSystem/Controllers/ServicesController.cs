@@ -16,6 +16,8 @@ namespace ChildCareSystem.Controllers
     public class ServicesController : Controller
     {
         private readonly ChildCareSystemContext _context;
+        private const int MAX_ITEM_PAGE = 4;
+        
 
         public ServicesController(ChildCareSystemContext context)
         {
@@ -23,10 +25,32 @@ namespace ChildCareSystem.Controllers
         }
 
         // GET: Services
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string search, int page = 1)
         {
+            int pageCount;
             var childCareSystemContext = _context.Service.Include(s => s.Specialty);
-            return View(await childCareSystemContext.ToListAsync());
+            IEnumerable<Service> resultList;
+            resultList = await childCareSystemContext.Skip((page - 1) * MAX_ITEM_PAGE)
+                                                            .Take(MAX_ITEM_PAGE)
+                                                            .ToListAsync();
+            if (!String.IsNullOrEmpty(search))
+            {
+                resultList = resultList.Where(s => s.ServiceName.Contains(search)).ToList();
+                pageCount = (int)Math.Ceiling(resultList.Count() / (double)MAX_ITEM_PAGE);
+
+            } 
+            else
+            {
+                pageCount = (int)Math.Ceiling(_context.Service.Count() / (double)MAX_ITEM_PAGE);
+            }
+            
+            if (page <= 0 || page > pageCount)
+            {
+                return NotFound();
+            }
+            ViewBag.PageCount = pageCount;
+            ViewBag.CurrentPage = page;
+            return View(resultList);
         }
 
         // GET: Services/Details/5

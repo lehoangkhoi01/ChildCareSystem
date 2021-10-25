@@ -16,10 +16,11 @@ using System.Security.Claims;
 
 namespace ChildCareSystem.Controllers
 {
-    [Authorize(Roles = "Staff, Admin")]
+
     public class BlogsController : Controller
     {
         private readonly ChildCareSystemContext _context;
+        private const int MAX_ITEM_PAGE = 4;
         private readonly UserManager<ChildCareSystemUser> _userManager;
         private readonly SignInManager<ChildCareSystemUser> _signInManager;
 
@@ -33,12 +34,38 @@ namespace ChildCareSystem.Controllers
         }
 
         // GET: Blogs
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string search, int page = 1)
         {
-            return View(await _context.Blog
-                .Include(b => b.BlogCategory)
-                .Include(b => b.ChildCareSystemUser)
-                .ToListAsync());
+            int pageCount;
+            var childCareSystemContext = _context.Blog.Include(b => b.BlogCategory)
+                                                        .Include(b => b.ChildCareSystemUser);
+
+            
+            IEnumerable<Blog> resultList;
+            resultList = await childCareSystemContext.Skip((page - 1) * MAX_ITEM_PAGE)
+                                                            .Take(MAX_ITEM_PAGE)
+                                                            .ToListAsync();
+
+            if (!String.IsNullOrEmpty(search))
+            {
+                resultList = resultList.Where(s => s.Title.Contains(search)).ToList();
+                pageCount = (int)Math.Ceiling(resultList.Count() / (double)MAX_ITEM_PAGE);
+
+            }
+            else
+            {
+                pageCount = (int)Math.Ceiling(_context.Blog.Count() / (double)MAX_ITEM_PAGE);
+            }
+
+
+            if (page <= 0 || page > pageCount)
+            {
+                return NotFound();
+            }
+            ViewBag.PageCount = pageCount;
+            ViewBag.CurrentPage = page;
+
+            return View(resultList);
         }
 
         // GET: Blogs/Details/5
@@ -50,6 +77,8 @@ namespace ChildCareSystem.Controllers
             }
 
             var blog = await _context.Blog
+                .Include(b => b.BlogCategory)
+                .Include(b => b.ChildCareSystemUser)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (blog == null)
             {
@@ -60,6 +89,7 @@ namespace ChildCareSystem.Controllers
         }
 
         // GET: Blogs/Create
+        [Authorize(Roles = "Staff, Admin")]
         public async Task<IActionResult> Create()
         {
             var list = await _context.BlogCategory.ToListAsync();
@@ -70,6 +100,7 @@ namespace ChildCareSystem.Controllers
         // POST: Blogs/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Staff, Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Title,Content,ImageLink,ImageName,CategoryId")] BlogViewModel blogViewModel)
@@ -102,6 +133,7 @@ namespace ChildCareSystem.Controllers
         }
 
         // GET: Blogs/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -131,6 +163,7 @@ namespace ChildCareSystem.Controllers
         // POST: Blogs/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, 
@@ -191,6 +224,7 @@ namespace ChildCareSystem.Controllers
         }
 
         // GET: Blogs/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -209,6 +243,7 @@ namespace ChildCareSystem.Controllers
         }
 
         // POST: Blogs/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

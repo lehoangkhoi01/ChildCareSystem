@@ -5,33 +5,33 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Details</h1>
+<div class="container">
+    <div class="body-top mt-3">
+        <div class="service-name text-center mb-4">
+            <h2>@Model.Title</h2>
+        </div>
+    </div>
 
-<div>
-    <h4>Blog</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Content)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Content)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Image)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Image)
-        </dd>
-    </dl>
+    <div class="specialty-section col-12 mb-3">
+        <span style="font-weight: bold" class="mr-1">Category:</span>@Model.BlogCategory.CategoryName
+    </div>
+    <div class="row mb-5">
+        <div class="body-left col-12">
+            <div>
+                <div class="service-thumb mb-3">
+                    <img src="@Model.Image" />
+                </div>
+                <div class="service-des">
+                    @Html.Raw(Model.Content)
+                </div>
+                <div class="price text-center float-right">
+                    <span style="font-weight: bold">Author:</span> @Model.ChildCareSystemUser.FullName
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+@section Styles {
+    <link href="@Url.Content("~/css/service/detail.css")" rel="stylesheet" type="text/css" />
+}

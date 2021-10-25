@@ -5,45 +5,53 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Details</h1>
+<div class="container">
+    <div class="body-top mt-3">
+        <div class="service-name text-center mb-4">
+            <h2>@Model.ServiceName</h2>
+        </div>
+    </div>
+    
+    <div class="specialty-section col-12 mb-3">
+        <span style="font-weight: bold" class="mr-1">Specialty:</span>@Model.Specialty.SpecialtyName
+    </div>
+    <div class="row mb-5">
+        <div class="body-left col-12">
+            <div>
+                <div class="service-thumb mb-3">
+                    <img src="@Model.ThumbnailLink" />
+                </div>
+                <div class="service-des">
+                    @Html.Raw(Model.Description)
+                </div>
+                <div class="price text-center float-right">
+                    <span style="font-weight: bold">Price:</span> @Model.Price$
+                </div>
+            </div>
+            <div class="funct-button text-center mt-5">
+                <a class="btn btn-primary col-4" href="#">Make reservation</a><br>
+                @*<div class="status mt-4">
+                        <form action="UpdateServiceStatusServlet" method="POST">
+                            <input type="hidden" name="txtServiceID" value="${service.serviceId}" />
+                            <c:choose>
+                                <c:when test="${service.statusId eq 0}">
+                                    <button class="btn btn-outline-primary col-4" type="submit" value="1" name="status">Duyệt dịch vụ</button>
+                                    <button class="btn btn-outline-danger col-4" type="submit" value="2" name="status">Từ chối</button>
+                                </c:when>
+                                <c:when test="${service.statusId eq 1}">
+                                    <button class="btn btn-outline-secondary col-4" type="submit" value="0" name="status">Ẩn dịch vụ</button>
+                                </c:when>
+                                <c:when test="${service.statusId eq 2}">
+                                    <button class="btn btn-outline-primary col-4" type="submit" value="1" name="status">Hiện bài đăng</button>
+                                </c:when>
+                            </c:choose>
+                        </form>
+                    </div>*@
+            </div>
+        </div>
+    </div>
+</div>
 
-<div>
-    <h4>Service</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ServiceName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ServiceName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ThumbnailLink)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ThumbnailLink)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Price)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Specialty)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Specialty.Id)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+@section Styles {
+    <link href="@Url.Content("~/css/service/detail.css")" rel="stylesheet" type="text/css" />
+}

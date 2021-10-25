@@ -4,57 +4,69 @@
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<div class="loader">
+    <img src="~/images/loading.gif" alt="Loading..." />
+</div>
 
-<h1>Index</h1>
+<div class="page-wrapper">
+    <div class="section-title">
+        <h2>Our blogs</h2>
+    </div>
+    <form class="mx-5 px-5" asp-action="Index" method="get">
+        <div class="form-row col-12 col-md-6">
+            <input type="text" class="form-control col-8" placeholder="Search blog" name="search">
+            <div class="input-group-append">
+                <button class="btn btn-success" type="submit">Search</button>
+            </div>
+        </div>
+    </form>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Content)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Image)
-            </th>
-            <th>
-                Category
-            </th>
-            <th>
-                Author
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Content)
-            </td>
-            <td>
-                <img src="@item.Image" width="70" height="70"/>
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BlogCategory.CategoryName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ChildCareSystemUser.FullName)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+    <div class="service-wrapper row">
+        @foreach (var item in Model)
+        {
+            <div class="service-preview d-flex my-4 mx-5">
+                <div class="service-thumbnail">
+                    <img src="@item.Image" />
+                </div>
+                <div class="service-text my-3">
+                    <div class="service-name px-3">
+                        <h4>@item.Title</h4>
+                    </div>
+                    <div class="service-descript text-secondary px-3">
+                        @Html.Raw(item.Content)
+                    </div>
+                    <div class="card-bottom mt-3 px-3">
+                        <a class="" asp-action="Details" asp-route-id="@item.Id">Read more</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <nav aria-label="..." class="pagination">
+        <ul class="pagination">
+            <li class="@(ViewBag.CurrentPage == 1 ? "page-item disabled" : "page-item")">
+                <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage - 1 })" tabindex="-1">Previous</a>
+            </li>
+            @for (int i = 1; i <= ViewBag.PageCount; i++)
+            {
+                <li class="@(i == ViewBag.CurrentPage ? "page-item active" : "page-item")">
+                    <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                </li>
+            }
+            <li class="@(ViewBag.CurrentPage == ViewBag.PageCount ? "page-item disabled" : "page-item")">
+                <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage + 1 })">Next</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+@section Styles {
+    <link href="@Url.Content("~/css/service/index.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/css/common/loading.css")" rel="stylesheet" type="text/css" />
 }
-    </tbody>
-</table>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/loading.js"></script>
+}

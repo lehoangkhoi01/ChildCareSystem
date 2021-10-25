@@ -1,0 +1,11 @@
+﻿
+@media screen and (max-width: 575px) {
+    .header_wrapper {
+        padding: 0 !important;
+    }
+
+    .header_top nav a {
+        font-size: 1.2rem;
+    }
+
+}

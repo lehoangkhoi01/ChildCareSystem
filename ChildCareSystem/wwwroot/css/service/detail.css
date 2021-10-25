@@ -1,0 +1,45 @@
+﻿.top_title {
+    font-size: 2rem;
+}
+
+.price {
+    font-size: 1.2rem;
+}
+
+.service-thumb {
+    display: flex;
+    justify-content: center;
+}
+
+.specialty-section {
+    display: flex;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+
+.service-thumb img {
+    width: 50vw;
+    height: auto;
+    border-radius: 15px;
+}
+
+.service-des {
+    margin: 0 auto;
+    width: 50vw;
+    font-size: 1.2rem;
+}
+
+@media screen and (max-width: 575px) {
+    .service-name h2 {
+        font-size: 1.5rem;
+    }
+
+    .service-des {
+        width: unset;
+    }
+
+    .service-thumb img {
+        width: 100%;
+    }
+}
