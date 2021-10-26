@@ -1,0 +1,103 @@
+﻿.wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.wrapper > a {
+    margin-top: 1rem;
+    font-size: 1.2rem;
+}
+
+.patient-wrapper {
+    /*justify-content: center;*/
+    width: 65%;
+}
+
+.patient-preview {
+    background-color: #fff;
+    /*padding-top: 10px;*/
+    border-radius: 4px;
+    border: 1px solid #b2bec3;
+    width: 30%;
+    box-shadow: 0px 4px 8px 0px #7986CB;
+}
+
+.section-title {
+    text-align: center;
+    padding-bottom: 20px;
+}
+
+    .section-title h2 {
+        font-size: 28px;
+        font-weight: bold;
+        text-transform: uppercase;
+        padding-bottom: 20px;
+        position: relative;
+    }
+
+        .section-title h2::after {
+            content: "";
+            position: absolute;
+            display: block;
+            width: 50px;
+            height: 3px;
+            background: #0275d8;
+            bottom: 0;
+            left: calc(50% - 25px);
+        }
+
+.card-button {
+    color: #fff;  
+}
+
+.card-button form {
+    display: inline-block;
+}
+
+.card-button a {
+    width: 5rem;
+}
+
+.overlay-image {
+    position: absolute;
+}
+
+.overlay-image img {
+    width: 100%;
+}
+
+.overlay1 {
+    width: 15vw;
+    left: 5%;
+    top: 20%;
+}
+
+.overlay2 {
+    width: 15vw;
+    right: 10%;
+    top: 55vh;
+}
+
+@media screen and (max-width: 575px) {
+    .wrapper {
+        width: unset;
+        margin-bottom: 1rem;
+    }
+
+    .section-title {
+        margin: 1rem 0 !important;
+        padding-bottom: 10px;
+    }
+
+    .patient-wrapper {
+        width: 90%;
+    }
+
+    .patient-preview {
+        margin: 1rem 0 !important;
+    }
+}

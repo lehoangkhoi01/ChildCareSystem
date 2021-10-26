@@ -4,11 +4,11 @@
 
 input {
     padding: 10px 20px !important;
-    border: 1px solid #000 !important;
+    
     border-radius: 10px;
     box-sizing: border-box;
     background-color: #616161 !important;
-    color: #fff !important;
+    color: #000 !important;
     font-size: 16px;
     letter-spacing: 1px;
     width: 180px
@@ -23,7 +23,7 @@ input {
     }
 
 ::placeholder {
-    color: #fff;
+    color: #000;
     opacity: 1
 }
 
@@ -43,8 +43,8 @@ button:focus {
 }
 
 .datepicker {
-    background-color: #000 !important;
-    color: #fff !important;
+    background-color: #fff !important;
+    color: #000 !important;
     border: none;
     padding: 10px !important
 }
@@ -82,13 +82,12 @@ thead tr:nth-child(3) th {
     }
 
 .active {
-    border-radius: 6px !important;
-    background-image: linear-gradient(#90CAF9, #64B5F6) !important;
-    color: #000 !important
+    background-color: #1976D2;
+    color: #fff !important;
 }
 
 .disabled {
-    color: #616161 !important
+    color: #b2bec3 !important
 }
 
 .prev,
@@ -98,7 +97,7 @@ thead tr:nth-child(3) th {
     padding: 20px 10px !important;
     text-transform: uppercase;
     font-size: 20px;
-    color: #fff !important;
+    color: #000 !important;
     opacity: 0.8
 }
 
@@ -116,18 +115,38 @@ thead tr:nth-child(3) th {
 }
 
     .cell:hover {
-        border: 1px solid #3D5AFE
+        border: 1px solid #007bff;
     }
 
     .cell.select {
-        background-color: #3D5AFE;
+        background-color: #007bff;
         color: #fff
     }
 
 .fa-calendar {
     color: #fff;
     font-size: 30px;
+    font-weight: 500;
     padding-top: 8px;
     padding-left: 5px;
-    cursor: pointer
+}
+
+@media screen and (max-width: 991px) {
+    .reservation-top {
+        flex-direction: column;
+    }
+
+    .left-section h4 {
+        text-align: center;
+    }
+
+    .service-choose {
+        padding: 0 !important;
+    }
+}
+
+@media screen and (max-width: 575px) {
+    .reservation-wrapper {
+        padding: 0 !important;
+    }
 }

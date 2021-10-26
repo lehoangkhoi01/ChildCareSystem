@@ -16,6 +16,7 @@ namespace ChildCareSystem.Controllers
     public class PatientsController : Controller
     {
         private readonly ChildCareSystemContext _context;
+        private const int MAX_PATIENT = 4;
 
         public PatientsController(ChildCareSystemContext context)
         {
@@ -25,7 +26,9 @@ namespace ChildCareSystem.Controllers
         // GET: Patients
         public async Task<IActionResult> Index(string? maxPatientError)
         {
-            var childCareSystemContext = _context.Patient.Include(p => p.ChildCareSystemUser).Include(p => p.Status);
+            var childCareSystemContext = _context.Patient.Include(p => p.ChildCareSystemUser)
+                                                            .Include(p => p.Status)
+                                                            .Where(p => p.StatusId == 2);
             if(!String.IsNullOrEmpty(maxPatientError))
             {
                 ViewBag.MAX_PATIENT_ERROR = maxPatientError;
@@ -60,9 +63,9 @@ namespace ChildCareSystem.Controllers
                                                                      && p.CustomerId == User.FindFirstValue(ClaimTypes.NameIdentifier))
                                                .ToListAsync();
             var count = listPatient.Count();
-            if (count == 3 )
+            if (count == MAX_PATIENT)
             {
-                var error = "You can only create maximum of 3 patient profiles.";
+                var error = "You can only create maximum of 4 patient profiles.";
                 return RedirectToAction(nameof(Index), new { maxPatientError = error });
             }
             return View();

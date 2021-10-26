@@ -30,7 +30,7 @@ namespace ChildCareSystem.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
         }
-        public IActionResult Index(bool? serviceBusy, bool? duplicated, bool? invalidTime)
+        public IActionResult Index(int? service, string? error)
         {
             var patientProfileList = _context.Patient.Where(p =>
                                             p.CustomerId == User.FindFirstValue(ClaimTypes.NameIdentifier)
@@ -43,20 +43,22 @@ namespace ChildCareSystem.Controllers
             ViewBag.PatientList = patientProfileList;
             ViewBag.PatientCount = profileCount;
             ViewBag.TimeList = timeAvailableList;
-            ViewData["Service"] = new SelectList(_context.Service, "Id", "ServiceName");
+            ViewData["Service"] = new SelectList(_context.Service, "Id", "ServiceName", service);
 
-            if(serviceBusy != null && serviceBusy == true)
+
+            switch(error)
             {
-                ViewBag.ERROR = "You can not make reservation for service in chosen time. Try to change time or date.";         
-            } 
-            else if (duplicated != null && duplicated == true)
-            {
-                ViewBag.ERROR = "You have already make medical reservation for this patient in chosen time.";
+                case "serviceBusy":
+                    ViewBag.ERROR = "You can not make reservation for service in chosen time. Try to change time or date.";
+                    break;
+                case "duplicated":
+                    ViewBag.ERROR = "You have already make medical reservation for this patient in chosen time.";
+                    break;
+                case "invalidTime":
+                    ViewBag.ERROR = "You must make reservation for service before at least 1 hour.";
+                    break;
             }
-            else if (invalidTime != null && invalidTime == true)
-            {
-                ViewBag.ERROR = "You must make reservation for service before at least 1 hour.";
-            }
+  
             return View();
         }
 
@@ -70,10 +72,14 @@ namespace ChildCareSystem.Controllers
 
 
             //Check validate datetime (must before at the moment at least 1 hour)
-            var timeDiff = (dateTime - DateTime.Now).TotalHours;
-            if (timeDiff < 1)
+            var timeDiff = (dateTime - DateTime.Now);
+            if (timeDiff.TotalHours < 1)
             {
-                return RedirectToAction(nameof(Index), new { invalidTime = true });
+                return RedirectToAction(nameof(Index), new { error = "invalidTime" });
+            } 
+            else if (timeDiff.TotalDays > 30) //Can not make reservation before 30 days
+            {
+                return RedirectToAction(nameof(Index), new { error = "serviceBusy" });
             }
 
             //Check duplicate reservation (same patient id and datetime)
@@ -83,7 +89,7 @@ namespace ChildCareSystem.Controllers
 
             if(duplicateReservation != null)
             {
-                return RedirectToAction(nameof(Index), new { duplicated = true });
+                return RedirectToAction(nameof(Index), new { error = "duplicated" });
             }
 
             // Get service by service id
@@ -111,7 +117,7 @@ namespace ChildCareSystem.Controllers
             if(String.IsNullOrEmpty(staffAssignedId))
             {
                 //Can not find free staff             
-                return RedirectToAction(nameof(Index), new { serviceBusy = true});
+                return RedirectToAction(nameof(Index), new { error = "serviceBusy"});
             }
 
             Reservation newReservation = new Reservation

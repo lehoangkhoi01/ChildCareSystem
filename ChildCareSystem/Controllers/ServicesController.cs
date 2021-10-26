@@ -28,7 +28,8 @@ namespace ChildCareSystem.Controllers
         public async Task<IActionResult> Index(string search, int page = 1)
         {
             int pageCount;
-            var childCareSystemContext = _context.Service.Include(s => s.Specialty);
+            var childCareSystemContext = _context.Service.Include(s => s.Specialty)
+                                                            .OrderByDescending(s => s.Id);
             IEnumerable<Service> resultList;
             resultList = await childCareSystemContext.Skip((page - 1) * MAX_ITEM_PAGE)
                                                             .Take(MAX_ITEM_PAGE)

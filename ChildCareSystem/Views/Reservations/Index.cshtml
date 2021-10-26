@@ -11,17 +11,17 @@
     </div>
 }
 
-<div class="reservation-wrapper px-5 py-5">
-    <h2 class="mb-4">Đặt chỗ khám bệnh</h2>
+<div class="reservation-wrapper px-5 py-5 my-3">
+
     <div class="form-row col-12 reservation-top pb-4">
-        <div class="col-4 left-section">
+        <div class="col-12 col-lg-4 left-section my-3">
             <h4>Patient profiles</h4>
             @if (ViewBag.PatientCount > 0)
             {
                 <div class="list-group patientProfile" id="list-tab" role="tablist">
                     @foreach (var patient in ViewBag.PatientList)
                     {
-                        <a class="card list-group-item list-group-item-action"
+                        <a class="list-group-item list-group-item-action"
                            id="@patient.Id"
                            data-toggle="list"
                            href="#"
@@ -47,7 +47,7 @@
                             </div>
                         </a>
                     }
-                    <a href="#" class="text-center my-3 addPatientLink">Thêm mới hồ sơ</a>
+                    <a asp-controller="Patients" asp-action="Create" class="text-center my-3 addPatientLink">Add new patient profile</a>
                     <div class="alert alert-danger my-3" id="patientError" role="alert" hidden>
                         You have to choose a patient to make reservation.
                     </div>
@@ -56,28 +56,29 @@
             else
             {
                 <div class="mb-5">
-                    <h5 style="margin-top: 40%">Chưa có hồ sơ bệnh nhân</h5>
-                    <small>(Bạn cần hồ sơ bệnh nhân để đặt dịch vụ)</small>
+                    <h5 style="margin-top: 40%">You have not added any patient yet.</h5>
+                    <small>(Need at least a patient to make an appointment)</small>
                 </div>
-                <a href="#" class="text-center my-3 addPatientLink">Thêm mới hồ sơ</a>
+                <a asp-controller="Patients" asp-action="Create" class="text-center my-3 addPatientLink">Add new patient</a>
             }
         </div>
 
-        <div class="col-8 px-4">
+        <div class="col-12 col-lg-8 right-section">
             <div class="container-fluid px-0 px-sm-4 mx-auto">
                 <div class="col-12">
-                    <div class="card border-0">
-                        <form asp-controller="Reservations" asp-action="Create" autocomplete="off" method="post" id="reservationForm">
-                            <div class="form-group col-md-4">
-                                <label class="control-label">Service</label>
-                                <select class="form-control" asp-items="ViewBag.Service" name="serviceId"></select>
-                            </div>
-                            <div class="card-header bg-dark">
+                    <form asp-controller="Reservations" asp-action="Create" autocomplete="off" method="post" id="reservationForm">
+                        <div class="form-group col-lg-6 mb-4 service-choose">
+                            <label class="control-label">Service</label>
+                            <select class="form-control" asp-items="ViewBag.Service" name="serviceId"></select>
+                        </div>
+                        <div class="card border-0">
+                            <div class="card-header bg-primary">
                                 <div class="mx-0 mb-0 row justify-content-sm-center justify-content-start px-1">
                                     <input type="text" id="dp1" class="datepicker" placeholder="Pick Date" name="dateReservation" readonly>
                                     <span class="fa fa-calendar"></span>
                                 </div>
                             </div>
+
                             <div class="card-body p-3 p-sm-5">
                                 <div class="row text-center mx-0">
                                     @foreach (var timeObj in ViewBag.TimeList)
@@ -88,10 +89,11 @@
                                     }
                                 </div>
                             </div>
-                            <input name="patientId" id="chosenPatientId" hidden />
-                            <input name="timeReservation" id="timeReservation" hidden />
-                        </form>
-                    </div>
+                        </div>
+                        <input name="patientId" id="chosenPatientId" hidden />
+                        <input name="timeReservation" id="timeReservation" hidden />
+                    </form>
+
                     <div class="alert alert-danger my-3" id="datetimeError" role="alert" hidden>
                         You have to choose date and time for reservation.
                     </div>
@@ -101,13 +103,13 @@
     </div>
     <div class="reservation-bottom col-12">
         <div class="text-center">
-            <button type="button" onclick="submitReservation()" class="btn btn-primary col-md-4">Continue</button>
+            <button type="button" onclick="submitReservation()" class="btn btn-success col-lg-4">Complete</button>
         </div>
     </div>
 </div>
 
 @section Styles {
-    <link href="@Url.Content("~/css/reservation/time-picker.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/css/reservation/index.css")" rel="stylesheet" type="text/css" />
 }
 
 @section Scripts {

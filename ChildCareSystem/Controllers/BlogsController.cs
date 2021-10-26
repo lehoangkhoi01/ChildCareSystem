@@ -38,7 +38,8 @@ namespace ChildCareSystem.Controllers
         {
             int pageCount;
             var childCareSystemContext = _context.Blog.Include(b => b.BlogCategory)
-                                                        .Include(b => b.ChildCareSystemUser);
+                                                        .Include(b => b.ChildCareSystemUser)
+                                                        .OrderByDescending(b => b.Id);
 
             
             IEnumerable<Blog> resultList;

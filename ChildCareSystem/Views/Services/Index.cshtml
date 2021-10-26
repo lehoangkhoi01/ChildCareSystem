@@ -39,7 +39,12 @@
                     </div>
                     <div class="card-bottom mt-3 px-3">
                         <a class="" asp-action="Details" asp-route-id="@item.Id">Read more</a>
-                        <a href="#" class="btn btn-success button-card">Make reservation</a>
+                        <a asp-controller="Reservations" 
+                           asp-action="Index" 
+                           asp-route-service="@item.Id"
+                           class="btn btn-success button-card">
+                            Make reservation
+                        </a>
                     </div>
                 </div>
             </div>
