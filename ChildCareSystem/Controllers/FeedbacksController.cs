@@ -54,6 +54,12 @@ namespace ChildCareSystem.Controllers
         // GET: Feedbacks/Create
         public async Task<IActionResult> Create(int reservationId)
         {
+            var feedback = await _context.Feedback.FirstOrDefaultAsync(u => u.ReservationId == reservationId);
+            if(feedback != null)
+            {
+                return RedirectToAction(nameof(Edit), new { id = feedback.Id });
+            }
+
             var reservation = await _context.Reservations.Include(u => u.Service)
                                                          .Include(u => u.Patient)
                                                          .Include(u => u.ChildCareSystemStaff)
@@ -64,13 +70,13 @@ namespace ChildCareSystem.Controllers
                 return NotFound();
             }
             // Only allow feedback after checkInTime 1 hour
-            //var timeDiff = (DateTime.Now - reservation.CheckInDate).TotalHours;
-            //if (timeDiff < 1)
-            //{
-            //    return RedirectToAction("GetCustomerReservationsList", 
-            //                            "Reservations", 
-            //                            new { feedbackError = true });
-            //}
+            var timeDiff = (DateTime.Now - reservation.CheckInDate).TotalHours;
+            if (timeDiff < 1)
+            {
+                return RedirectToAction("GetCustomerReservationsList",
+                                        "Reservations",
+                                        new { error = "feedbackError" });
+            }
 
             // Process to load information
             ViewBag.ReservationInfo = reservation;
@@ -140,7 +146,7 @@ namespace ChildCareSystem.Controllers
                 return NotFound();
             }
 
-
+            ViewBag.ReservationInfo = reservation;
             return View(feedback);
         }
 

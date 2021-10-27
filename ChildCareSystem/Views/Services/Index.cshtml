@@ -12,21 +12,19 @@
     <div class="section-title">
         <h2>Our services</h2>
     </div>
-    <form class="mx-5 px-5" asp-action="Index" method="get">
-        <div class="form-row col-12 col-lg-6">
-            <input type="text" class="form-control col-8" placeholder="Service's name" name="search">
-            <div class="input-group-append">
-                <button class="btn btn-success" type="submit">Search</button>
+   
+    <div class="service-wrapper">
+        <form class="col-12" asp-action="Index" method="get">
+            <div class="form-row col-12 col-lg-6">
+                <input type="text" class="form-control col-8" placeholder="Service's name" name="search">
+                <div class="input-group-append">
+                    <button class="btn btn-success" type="submit">Search</button>
+                </div>
             </div>
-        </div>
-
-    </form>
-
-
-    <div class="service-wrapper row">
+        </form>
         @foreach (var item in Model)
         {
-            <div class="service-preview d-flex my-4 mx-5">
+            <div class="service-preview d-flex my-4 mx-3">
                 <div class="service-thumbnail">
                     <img src="@item.ThumbnailLink" />
                 </div>
@@ -39,8 +37,8 @@
                     </div>
                     <div class="card-bottom mt-3 px-3">
                         <a class="" asp-action="Details" asp-route-id="@item.Id">Read more</a>
-                        <a asp-controller="Reservations" 
-                           asp-action="Index" 
+                        <a asp-controller="Reservations"
+                           asp-action="Index"
                            asp-route-service="@item.Id"
                            class="btn btn-success button-card">
                             Make reservation

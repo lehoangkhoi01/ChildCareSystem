@@ -12,19 +12,20 @@
     <div class="section-title">
         <h2>Our blogs</h2>
     </div>
-    <form class="mx-5 px-5" asp-action="Index" method="get">
-        <div class="form-row col-12 col-md-6">
-            <input type="text" class="form-control col-8" placeholder="Search blog" name="search">
-            <div class="input-group-append">
-                <button class="btn btn-success" type="submit">Search</button>
+   
+    <div class="service-wrapper">
+        <form class="col-12" asp-action="Index" method="get">
+            <div class="form-row col-12 col-lg-6">
+                <input type="text" class="form-control col-8" placeholder="Search blog" name="search">
+                <div class="input-group-append">
+                    <button class="btn btn-success" type="submit">Search</button>
+                </div>
             </div>
-        </div>
-    </form>
+        </form>
 
-    <div class="service-wrapper row">
         @foreach (var item in Model)
         {
-            <div class="service-preview d-flex my-4 mx-5">
+            <div class="service-preview d-flex my-4 mx-3">
                 <div class="service-thumbnail">
                     <img src="@item.Image" />
                 </div>

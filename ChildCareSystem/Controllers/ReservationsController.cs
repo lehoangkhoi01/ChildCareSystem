@@ -21,6 +21,7 @@ namespace ChildCareSystem.Controllers
         private readonly ChildCareSystemContext _context;
         private readonly UserManager<ChildCareSystemUser> _userManager;
         private readonly SignInManager<ChildCareSystemUser> _signInManager;
+        private const int MAX_ITEM_PAGE = 4;
 
         public ReservationsController(ChildCareSystemContext context,
                                UserManager<ChildCareSystemUser> userManager,
@@ -135,38 +136,56 @@ namespace ChildCareSystem.Controllers
             return View();
         }
     
-        public async Task<IActionResult> GetCustomerReservationsList(bool? invalidDelete, bool? feedbackError)
+        public async Task<IActionResult> GetCustomerReservationsList(string? error, int page = 1)
         {
+            
             var reservationList = _context.Reservations.Where(r => r.CustomerId == User.FindFirstValue(ClaimTypes.NameIdentifier))
                                                         .Include(u => u.Service)
                                                         .Include(u => u.ChildCareSystemUser)
-                                                        .Include(u => u.ChildCareSystemStaff)
-                                                        .Include(u => u.Patient);
+                                                        .Include(u => u.ChildCareSystemStaff)                                
+                                                        .Include(u => u.Patient)
+                                                        .OrderByDescending(u => u.CheckInDate);
 
-            if(invalidDelete != null && invalidDelete == true)
+            int pageCount = (int)Math.Ceiling(reservationList.Count() / (double)MAX_ITEM_PAGE);
+            if (page <= 0 || page > pageCount)
             {
-                ViewBag.ERROR = "You can only cancel your reservation before at least 1 hour";
-            } 
-            else if (feedbackError != null && feedbackError == true)
-            {
-                ViewBag.ERROR = "You can only give feedback about our service at least 1 hour after check in time. ";
+                return NotFound();
             }
-            return View("List", await reservationList.ToListAsync());
 
+            var resultList = await reservationList.Skip((page - 1) * MAX_ITEM_PAGE)
+                                                    .Take(MAX_ITEM_PAGE)
+                                                    .ToListAsync();
 
+            if(!String.IsNullOrEmpty(error))
+            {
+                switch (error)
+                {
+                    case "invalidCancel":
+                        ViewBag.ERROR = "You can only cancel your reservation before at least 45 minutes.";
+                        break;
+                    case "feedbackError":
+                        ViewBag.ERROR = "You can only give feedback about our service at least 1 hour after check in time. ";
+                        break;
+                }
+            }
+            
+            ViewBag.PageCount = pageCount;
+            ViewBag.CurrentPage = page;
+            return View("List", resultList);
         }
 
+        [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
             var reservation = await _context.Reservations.FindAsync(id);
             
             if(reservation != null)
             {
-                var timeDiff = (reservation.CheckInDate - DateTime.Now).TotalHours;
-                if(timeDiff < 1)
+                var timeDiff = (reservation.CheckInDate - DateTime.Now).TotalMinutes;
+                if(timeDiff < 45)
                 {
                     return RedirectToAction(nameof(GetCustomerReservationsList), 
-                                            new { invalidDelete = true});
+                                            new { error = "invalidCancel"});
                 }
                 _context.Reservations.Remove(reservation);
                 await _context.SaveChangesAsync();

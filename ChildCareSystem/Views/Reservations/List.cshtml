@@ -3,58 +3,141 @@
     ViewData["Title"] = "List";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@if (!String.IsNullOrEmpty(ViewBag.ERROR))
-{
-    <div class="alert alert-danger" role="alert">
-        @ViewBag.ERROR
+
+<div class="loader">
+    <img src="https://firebasestorage.googleapis.com/v0/b/child-care-system-fa552.appspot.com/o/images%2Fcommon%2Floading.gif?alt=media&token=978f2ac3-edb1-4748-b9ed-34b93c9e1f31" alt="Loading..." />
+</div>
+
+<div class="wrapper">
+    <div class="section-title my-3">
+        <h2>History</h2>
     </div>
-}
-<h1>List</h1>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Id
-            </th>
-            <th>
-                Patient
-            </th>
-            <th>
-                Service
-            </th>
-            <th>
-                Staff
-            </th>
-            <th>
-                Price
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
+
+    @if (!String.IsNullOrEmpty(ViewBag.ERROR))
+    {
+        <div class="alert alert-danger col-6 text-center" role="alert">
+            @ViewBag.ERROR
+        </div>
+    }
+
+    <div class="reservation-wrapper row">
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Id)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Patient.PatientName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Service.ServiceName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ChildCareSystemStaff.FullName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Price)
-                </td>
-                <td>
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>|
-                    <a asp-controller="Feedbacks" asp-action="Create" asp-route-reservationId="@item.Id">Feedback</a>
-                </td>
-            </tr>
+            DateTime dateNow = DateTime.Now;
+
+            <div class="reservation-preview d-flex col-12 col-lg-5">
+                <div class="row mb-2">
+                    <div class="col-12 col-lg-6">
+                        <span class="text-secondary" style="font-weight: 700">Id: </span>
+                        @item.Id
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <span class="text-secondary" style="font-weight: 700">Service: </span>
+                        @item.Service.ServiceName
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-12 col-lg-6">
+                        <span class="text-secondary" style="font-weight: 700">Patient's name: </span>
+                        @item.Patient.PatientName
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <span class="text-secondary" style="font-weight: 700">Date: </span>
+                        @item.CheckInDate
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-12 col-lg-6">
+                        <span class="text-secondary" style="font-weight: 700">Price: </span>
+                        @item.Price$
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <span class="text-secondary" style="font-weight: 700">Doctor: </span>
+                        @item.ChildCareSystemStaff.FullName
+                    </div>
+
+                </div>
+
+                <div class="card-button mt-3 px-3">
+                    @if ((dateNow - item.CheckInDate).TotalMinutes >= 0)
+                    {
+                        <a class="btn btn-success button-card"
+                           asp-controller="Feedbacks"
+                           asp-action="Create"
+                           asp-route-reservationId="@item.Id">
+                            Feedback
+                        </a>
+                    }
+                    else
+                    {
+                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">
+                            Cancel
+                        </button>
+                    }
+                    @*<a class="btn btn-success button-card"
+           asp-controller="Feedbacks"
+           asp-action="Create"
+           asp-route-reservationId="@item.Id">
+            Feedback
+        </a>
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">
+            Cancel
+        </button>*@
+                </div>
+            </div>
+
+            @* Confirm delete modal *@
+            <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Cancel appointment</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure to cancel this reservation?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <form asp-action="Delete" method="post">
+                                <input type="hidden" value="@item.Id" name="id" />
+                                <button class="btn btn-danger" type="submit">Cancel</button>
+                            </form>
+                            @*<button type="button" class="btn btn-danger">Delete</button>*@
+                        </div>
+                    </div>
+                </div>
+            </div>
         }
-    </tbody>
-</table>
+    </div>
+
+    <nav aria-label="..." class="pagination mt-5">
+        <ul class="pagination">
+            <li class="@(ViewBag.CurrentPage == 1 ? "page-item disabled" : "page-item")">
+                <a class="page-link" href="@Url.Action("GetCustomerReservationsList", new { page = ViewBag.CurrentPage - 1 })" tabindex="-1">Previous</a>
+            </li>
+            @for (int i = 1; i <= ViewBag.PageCount; i++)
+            {
+                <li class="@(i == ViewBag.CurrentPage ? "page-item active" : "page-item")">
+                    <a class="page-link" href="@Url.Action("GetCustomerReservationsList", new { page = i })">@i</a>
+                </li>
+            }
+            <li class="@(ViewBag.CurrentPage == ViewBag.PageCount ? "page-item disabled" : "page-item")">
+                <a class="page-link" href="@Url.Action("GetCustomerReservationsList", new { page = ViewBag.CurrentPage + 1 })">Next</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+
+@section Styles {
+    <link href="@Url.Content("~/css/reservation/list.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/css/common/loading.css")" rel="stylesheet" type="text/css" />
+}
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/loading.js"></script>
+}
