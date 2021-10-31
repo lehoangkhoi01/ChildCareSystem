@@ -1,5 +1,8 @@
 ﻿@model ChildCareSystem.Models.Service
-
+@using Microsoft.AspNetCore.Identity
+@using ChildCareSystem.Areas.Identity.Data
+@inject SignInManager<ChildCareSystemUser> SignInManager
+@inject UserManager<ChildCareSystemUser> UserManager
 @{
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -11,7 +14,7 @@
             <h2>@Model.ServiceName</h2>
         </div>
     </div>
-    
+
     <div class="specialty-section col-12 mb-3">
         <span style="font-weight: bold" class="mr-1">Specialty:</span>@Model.Specialty.SpecialtyName
     </div>
@@ -25,28 +28,29 @@
                     @Html.Raw(Model.Description)
                 </div>
                 <div class="price text-center float-right">
-                    <span style="font-weight: bold">Price:</span> @Model.Price$
+                    <span style="font-weight: bold">Price:</span> $@Model.Price
                 </div>
             </div>
             <div class="funct-button text-center mt-5">
-                <a class="btn btn-primary col-4" href="#">Make reservation</a><br>
-                @*<div class="status mt-4">
-                        <form action="UpdateServiceStatusServlet" method="POST">
-                            <input type="hidden" name="txtServiceID" value="${service.serviceId}" />
-                            <c:choose>
-                                <c:when test="${service.statusId eq 0}">
-                                    <button class="btn btn-outline-primary col-4" type="submit" value="1" name="status">Duyệt dịch vụ</button>
-                                    <button class="btn btn-outline-danger col-4" type="submit" value="2" name="status">Từ chối</button>
-                                </c:when>
-                                <c:when test="${service.statusId eq 1}">
-                                    <button class="btn btn-outline-secondary col-4" type="submit" value="0" name="status">Ẩn dịch vụ</button>
-                                </c:when>
-                                <c:when test="${service.statusId eq 2}">
-                                    <button class="btn btn-outline-primary col-4" type="submit" value="1" name="status">Hiện bài đăng</button>
-                                </c:when>
-                            </c:choose>
-                        </form>
-                    </div>*@
+                @if(User.IsInRole("Admin"))
+                {
+                    <a class="btn btn-success col-4"
+                       asp-controller="Services"
+                       asp-action="Edit"
+                       asp-route-id="@Model.Id">
+                        Edit
+                    </a><br>
+                }
+                else if(User.IsInRole("Customer"))
+                {
+                    <a class="btn btn-success col-4"
+                       asp-controller="Reservations"
+                       asp-action="Index"
+                       asp-route-service="@Model.Id">
+                        Make reservation
+                    </a><br>
+                }
+
             </div>
         </div>
     </div>

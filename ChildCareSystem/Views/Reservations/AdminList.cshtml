@@ -1,15 +1,12 @@
-﻿@model IEnumerable<ChildCareSystem.ViewModels.AccountWithRoleViewModel>
+﻿@model IEnumerable<ChildCareSystem.Models.Reservation>
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "List";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="loader">
-    <img src="~/images/loading.gif" alt="Loading..." />
-</div>
 
 <div class="wrapper px-3 py-5">
     <div class="section-title">
-        <h2>Accounts</h2>
+        <h2>Reservations</h2>
     </div>
 
     <div class="table-wrapper">
@@ -17,20 +14,21 @@
             <thead>
                 <tr>
                     <th>
-                        Email
+                        ID
                     </th>
                     <th>
-                        Full name
+                        Customer
                     </th>
                     <th>
-                        Phone number
+                        Patient
                     </th>
                     <th>
-                        Address
+                        Service
                     </th>
                     <th>
-                        Role
+                        Date
                     </th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -38,35 +36,41 @@
                 {
                     <tr>
                         <td>
-                            @item.Email
+                            @item.Id
                         </td>
                         <td>
-                            @item.FullName
+                            @item.ChildCareSystemUser.FullName
                         </td>
                         <td>
-                            @item.PhoneNumber
+                            @item.Patient.PatientName
                         </td>
                         <td>
-                            @item.Address
+                            @item.Service.ServiceName
                         </td>
                         <td>
-                            @item.RoleName
+                            @item.CheckInDate
                         </td>
-
+                        <td>
+                            <a asp-controller="Reservations"
+                               asp-action="GetReservationDetail"
+                               asp-route-id="@item.Id">
+                                Detail
+                            </a>
+                        </td>
                     </tr>
                 }
             </tbody>
         </table>
     </div>
+
 </div>
 
+
 @section Styles {
-    <link href="@Url.Content("~/css/common/loading.css")" rel="stylesheet" type="text/css" />
     <style>
         .wrapper {
             display: flex;
             flex-direction: column;
-            /*width: 90vw;*/
             justify-content: center;
             align-items: center;
             margin: 0 auto;
@@ -105,7 +109,6 @@
 @section Scripts {
     <script type="text/javascript" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
-    <script src="~/js/loading.js"></script>    
     <script>
         $(".mydatatable").DataTable();
     </script>

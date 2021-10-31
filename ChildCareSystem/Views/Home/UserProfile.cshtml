@@ -1,0 +1,92 @@
+﻿@model ChildCareSystem.ViewModels.UserProfileViewModel
+
+@{
+    ViewData["Title"] = "Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="wrapper px-5 py-3">
+    <div class="section-title my-3">
+        <h2>Personal information</h2>
+    </div>
+
+    <div class="alert alert-warning col-lg-6" role="alert">
+        You need to provide your current password to change personal data.
+    </div>
+    <form asp-action="UpdateInfo" class="col-12 col-lg-6" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-row">
+            <div class="form-group col-12 col-lg-6">
+                <label class="control-label">Email</label>
+                <input class="form-control" asp-for="Email" disabled />
+            </div>
+            <div class="form-group col-12 col-lg-6">
+                <label class="control-label">Full name</label>
+                <input class="form-control" asp-for="FullName" />
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-12 col-lg-6">
+                <label class="control-label">Address</label>
+                <input class="form-control" asp-for="Address" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+            <div class="form-group col-12 col-lg-6">
+                <label asp-for="PhoneNumber" class="control-label"></label>
+                <input class="form-control" asp-for="PhoneNumber" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-12">
+                <label asp-for="OldPassword" class="control-label"></label>
+                <input class="form-control" asp-for="OldPassword" />
+                <span asp-validation-for="OldPassword" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-12">
+                <label asp-for="NewPassword" class="control-label"></label>
+                <input class="form-control" asp-for="NewPassword" />
+                <span asp-validation-for="NewPassword" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-12">
+                <label asp-for="ConfirmPassword" class="control-label"></label>
+                <input class="form-control" asp-for="ConfirmPassword" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-group text-center">
+            <a class="btn btn-secondary col-6 col-lg-2 my-2"
+               style="color: #ffffff"
+               asp-action="Index">
+                Back
+            </a>
+            <input type="submit" value="Save changes" class="btn btn-success col-6 col-lg-3" />
+        </div>
+    </form>
+
+    @if (!String.IsNullOrEmpty(ViewBag.PasswordError))
+    {
+        <div class="alert alert-danger col-lg-6" role="alert">
+            @ViewBag.PasswordError
+        </div>
+    }
+    else if (!String.IsNullOrEmpty(ViewBag.UpdateSuccess))
+    {
+        <div class="alert alert-success col-lg-6" role="alert">
+            @ViewBag.UpdateSuccess
+        </div>
+    }
+</div>
+
+@section Styles {
+    <link href="@Url.Content("~/css/home/profile.css")" rel="stylesheet" type="text/css" />
+}

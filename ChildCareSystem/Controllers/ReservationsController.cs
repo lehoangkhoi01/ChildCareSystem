@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace ChildCareSystem.Controllers
 {
-    [Authorize(Roles = "Customer")]
+    
     public class ReservationsController : Controller
     {
         private readonly ChildCareSystemContext _context;
@@ -31,6 +31,8 @@ namespace ChildCareSystem.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
         }
+
+        [Authorize(Roles = "Customer")]
         public IActionResult Index(int? service, string? error)
         {
             var patientProfileList = _context.Patient.Where(p =>
@@ -64,6 +66,8 @@ namespace ChildCareSystem.Controllers
         }
 
 
+
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         public async  Task<IActionResult> Create([FromForm] string dateReservation, string timeReservation, int patientId, int serviceId)
         {
@@ -135,7 +139,14 @@ namespace ChildCareSystem.Controllers
 
             return View();
         }
-    
+
+        [HttpGet]
+        public async Task<IActionResult> Create()
+        {
+            return View();
+        }
+
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> GetCustomerReservationsList(string? error, int page = 1)
         {
             
@@ -174,6 +185,71 @@ namespace ChildCareSystem.Controllers
             return View("List", resultList);
         }
 
+        [Authorize(Roles = "Staff")]
+        public async Task<IActionResult> GetStaffSchedule(string? error)
+        {
+
+            var reservationList = await _context.Reservations.Where(r => r.StaffAssignedId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+                                                        .Include(u => u.Service)
+                                                        .Include(u => u.ChildCareSystemUser)
+                                                        .Include(u => u.ChildCareSystemStaff)
+                                                        .Include(u => u.Patient)
+                                                        .OrderByDescending(u => u.CheckInDate)
+                                                        .ToListAsync();
+
+            if (!String.IsNullOrEmpty(error))
+            {
+                switch (error)
+                {
+                    case "invalidCancel":
+                        ViewBag.ERROR = "You can only cancel your reservation before at least 45 minutes.";
+                        break;
+                    case "feedbackError":
+                        ViewBag.ERROR = "You can only give feedback about our service at least 1 hour after check in time. ";
+                        break;
+                }
+            }
+
+            
+            return View("StaffSchedule", reservationList);
+        }
+
+
+        public async Task<IActionResult> GetAllReservations()
+        {
+            var reservationList = await _context.Reservations.Include(u => u.Service)
+                                                        .Include(u => u.ChildCareSystemUser)
+                                                        .Include(u => u.ChildCareSystemStaff)
+                                                        .Include(u => u.Patient)
+                                                        .OrderByDescending(u => u.CheckInDate)
+                                                        .ToListAsync();
+            return View("AdminList", reservationList);
+        }
+
+        [Authorize(Roles = "Staff, Admin")]
+        public async Task<IActionResult> GetReservationDetail(int id)
+        {
+            var reservation = await _context.Reservations
+                                            .Include(r => r.Patient)
+                                            .Include(r => r.ChildCareSystemUser)
+                                            .Include(r => r.ChildCareSystemStaff)
+                                            .Include(r => r.Service)
+                                            .FirstOrDefaultAsync(r => r.Id == id);
+            if(reservation == null)
+            {
+                return NotFound();
+            }
+
+            var feedback = await _context.Feedback.FirstOrDefaultAsync(f => f.ReservationId == id);
+            if (feedback != null)
+            {
+                ViewBag.Feedback = feedback;
+            }
+
+            return View("Detail", reservation);
+        }
+
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {

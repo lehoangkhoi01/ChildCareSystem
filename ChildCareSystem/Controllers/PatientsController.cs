@@ -9,21 +9,28 @@ using ChildCareSystem.Data;
 using ChildCareSystem.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
+using ChildCareSystem.Areas.Identity.Data;
 
 namespace ChildCareSystem.Controllers
 {
-    [Authorize(Roles = "Customer")]
+    
     public class PatientsController : Controller
     {
         private readonly ChildCareSystemContext _context;
+        private readonly UserManager<ChildCareSystemUser> _userManager;
+        private readonly SignInManager<ChildCareSystemUser> _signInManager;
         private const int MAX_PATIENT = 4;
 
-        public PatientsController(ChildCareSystemContext context)
+        public PatientsController(ChildCareSystemContext context, 
+                                    UserManager<ChildCareSystemUser> userManager,
+                                    SignInManager<ChildCareSystemUser> signInManager)
         {
             _context = context;
         }
 
         // GET: Patients
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> Index(string? maxPatientError)
         {
             var childCareSystemContext = _context.Patient.Include(p => p.ChildCareSystemUser)
@@ -36,7 +43,31 @@ namespace ChildCareSystem.Controllers
             return View(await childCareSystemContext.ToListAsync());
         }
 
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAll(string? status)
+        {
+            List<Patient> resultList;
+
+            if(String.IsNullOrEmpty(status))
+            {
+                resultList = await _context.Patient.Include(p => p.ChildCareSystemUser)
+                                                            .Include(p => p.Status)
+                                                            .ToListAsync();
+            } 
+            else
+            {
+                resultList = await _context.Patient.Include(p => p.ChildCareSystemUser)
+                                                            .Include(p => p.Status)
+                                                            .Where(p => p.StatusId == Int32.Parse(status))
+                                                            .ToListAsync();
+            }
+            
+            return View("AdminList", resultList);                                                            
+        }
+
+
         // GET: Patients/Details/5
+        [Authorize(Roles = "Admin, Staff")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -52,11 +83,12 @@ namespace ChildCareSystem.Controllers
             {
                 return NotFound();
             }
-
+        
             return View(patient);
         }
 
         // GET: Patients/Create
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> Create()
         {
             var listPatient = await _context.Patient.Where(p => p.StatusId == 2
@@ -76,6 +108,7 @@ namespace ChildCareSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> Create([Bind("Id,PatientName,Gender,Birthdate")] Patient patient)
         {
             if (ModelState.IsValid)
@@ -96,7 +129,9 @@ namespace ChildCareSystem.Controllers
             return View(patient);
         }
 
+
         // GET: Patients/Edit/5
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -115,6 +150,7 @@ namespace ChildCareSystem.Controllers
         // POST: Patients/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,PatientName,Gender,Birthdate,CustomerId,StatusId")] Patient patient)
@@ -159,26 +195,27 @@ namespace ChildCareSystem.Controllers
         }
 
         // GET: Patients/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var patient = await _context.Patient
-                .Include(p => p.ChildCareSystemUser)
-                .Include(p => p.Status)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (patient == null)
-            {
-                return NotFound();
-            }
+        //    var patient = await _context.Patient
+        //        .Include(p => p.ChildCareSystemUser)
+        //        .Include(p => p.Status)
+        //        .FirstOrDefaultAsync(m => m.Id == id);
+        //    if (patient == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(patient);
-        }
+        //    return View(patient);
+        //}
 
         // POST: Patients/Delete/5
+        [Authorize(Roles = "Customer")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

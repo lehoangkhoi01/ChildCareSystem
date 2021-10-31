@@ -1,4 +1,4 @@
-﻿@model ChildCareSystem.Models.Feedback
+﻿@model ChildCareSystem.ViewModels.FeedbackViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -11,7 +11,7 @@
         <h2>Feedback</h2>
     </div>
 
-    <div class="form-wrapper col-12 col-lg-8 mt-3">
+    <div class="form-wrapper col-12 col-lg-8 mt-3 py-3">
         <div class="info-wrapper col-12">
             <div class="row">
                 <div class="col"><span class="text-secondary">Service:</span> @ViewBag.ReservationInfo.Service.ServiceName</div>
@@ -71,12 +71,40 @@
                         <input asp-for="ServiceId" value="@ViewBag.ReservationInfo.Service.Id" hidden />
                         <input asp-for="ReservationId" value="@ViewBag.ReservationInfo.Id" hidden />
                         <div class="form-group col-12 text-center">
-                            <button class="btn btn-success col-md-4" type="submit">
+                            <button class="btn btn-success col-8 col-lg-4 my-3" type="submit">
                                 Update feedback
+                            </button>
+                            <button type="button" class="btn btn-danger col-8 col-lg-4" data-toggle="modal" data-target="#deleteModal">
+                                Delete
                             </button>
                         </div>
                     </form>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Confirm delete modal *@
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Delete feedback</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure to delete this feedback?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" value="@Model.Id" name="id" />
+                    <button class="btn btn-danger" type="submit">Delete</button>
+                </form>
+                @*<button type="button" class="btn btn-danger">Delete</button>*@
             </div>
         </div>
     </div>
@@ -101,5 +129,5 @@
             }
         }
     </script>
-    
+
 }

@@ -2,7 +2,107 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="loader">
+    <img src="https://firebasestorage.googleapis.com/v0/b/child-care-system-fa552.appspot.com/o/images%2Fcommon%2Floading.gif?alt=media&token=978f2ac3-edb1-4748-b9ed-34b93c9e1f31" alt="Loading..." />
 </div>
+
+<!-- ======= Hero Section ======= -->
+<section id="hero" class="d-flex align-items-center">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 pt-5 pt-lg-0 order-2 order-lg-1 d-flex flex-column justify-content-center">
+                <h1>Elegant and creative solutions</h1>
+                <h2>We are team of talented designers making websites with Bootstrap</h2>
+                <div class="d-flex">
+                    <a href="#about" class="btn-get-started scrollto">Make reservation</a>
+                </div>
+            </div>
+            <div class="col-lg-6 order-1 order-lg-2 hero-img">
+                <img src="https://firebasestorage.googleapis.com/v0/b/child-care-system-fa552.appspot.com/o/images%2Fcommon%2Fundraw_medicine_b-1-ol.svg?alt=media&token=cc7bdc53-ea08-4833-a002-11db48eeb809" class="img-fluid animated" alt="">
+            </div>
+        </div>
+    </div>
+
+</section><!-- End Hero -->
+<!-- ======= Blog Section ======= -->
+<section id="blogs" class="services section-bg">
+    <div class="container">
+        <div class="section-title">
+            <span>Blogs</span>
+            <h2>Blogs</h2>
+            <p>Sit sint consectetur velit quisquam cupiditate impedit suscipit alias</p>
+        </div>
+        <div class="row">
+            @foreach (var item in ViewBag.BlogList)
+            {
+                <div class="col-lg-4 col-md-6 d-flex align-items-stretch service-item">
+                    <img src="@item.Image" />
+                    <div class="icon-box">
+                        <h4>
+                            <a asp-controller="Blogs"
+                               asp-action="Details"
+                               asp-route-id="@item.Id">
+                                @item.Title
+                            </a>
+                        </h4>
+                        <div>@Html.Raw(item.Content)</div>
+                    </div>
+                </div>
+            }
+        </div>
+        <a asp-controller="Blogs" asp-action="Index" class="float-right mt-3">View all blogs</a>
+    </div>
+</section><!-- End Blog Section -->
+
+<!-- ======= Cta Section ======= -->
+<section id="cta" class="cta">
+    <div class="container">
+        <div class="text-center">
+            <h3>Call To Action</h3>
+            <p> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            <a class="cta-btn" asp-controller="Reservations" asp-action="Index">Make reservation</a>
+        </div>
+
+    </div>
+</section><!-- End Cta Section -->
+
+<!-- ======= Services Section ======= -->
+<section id="services" class="services section-bg">
+    <div class="container">
+        <div class="section-title">
+            <span>Services</span>
+            <h2>Services</h2>
+            <p>Sit sint consectetur velit quisquam cupiditate impedit suscipit alias</p>
+        </div>
+        <div class="row">
+            @foreach (var item in ViewBag.ServiceList)
+            {
+                <div class="col-lg-4 col-md-6 d-flex align-items-stretch service-item">
+                    <img src="@item.ThumbnailLink" />
+                    <div class="icon-box">
+                        <h4>
+                            <a asp-controller="Services"
+                               asp-action="Details"
+                               asp-route-id="@item.Id">
+                                @item.ServiceName
+                            </a>
+                        </h4>
+                        <div>@Html.Raw(item.Description)</div>
+                    </div>
+                </div>
+            }
+        </div>
+        <a asp-controller="Services" asp-action="Index" class="float-right mt-3">View all services</a>
+    </div>
+</section><!-- End Services Section -->
+
+
+@section Styles {
+    <link href="@Url.Content("~/css/home/index.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/css/common/loading.css")" rel="stylesheet" type="text/css" />
+}
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/loading.js"></script>
+}

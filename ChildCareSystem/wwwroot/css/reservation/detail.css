@@ -1,0 +1,51 @@
+﻿.wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.form-wrapper {
+    display: flex;
+    flex-direction: column;
+    border-radius: 4px;
+    border: 1px solid #b2bec3;
+    background-color: #fff;
+    box-shadow: 0px 4px 8px 0px #7986CB;
+}
+
+.customer-section, .service-section, .feedback-section {
+    display: flex;
+    flex-direction: column;
+}
+    .customer-section > div, .service-section > div, .feedback-section > div {
+        font-size: 1.2rem;
+    }
+
+        .customer-section > div span, .service-section > div span, .feedback-section > div span {
+            font-weight: 700;
+        }
+
+.row > .col:nth-child(2) {
+    text-align: right;
+}
+
+hr {
+    border: 0;
+    clear: both;
+    display: block;
+    width: 96%;
+    background-color: rgba(0,0,0,.3);
+    height: 1px;
+}
+
+@media screen and (max-width: 575px) {
+    .wrapper {
+        padding: 0 !important;
+    }
+
+    .row > .col:nth-child(2) {
+        text-align: unset;
+    }
+}

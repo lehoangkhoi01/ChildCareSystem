@@ -1,5 +1,8 @@
 ﻿@model ChildCareSystem.Models.Blog
-
+@using Microsoft.AspNetCore.Identity
+@using ChildCareSystem.Areas.Identity.Data
+@inject SignInManager<ChildCareSystemUser> SignInManager
+@inject UserManager<ChildCareSystemUser> UserManager
 @{
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -27,6 +30,44 @@
                 <div class="price text-center float-right">
                     <span style="font-weight: bold">Author:</span> @Model.ChildCareSystemUser.FullName
                 </div>
+                <br />
+                @if (User.IsInRole("Admin"))
+                {
+            <div class="text-center button-group">
+                <a class="btn btn-success col-3 mx-2" style="color: #fff"
+                   asp-action="Edit"
+                   asp-route-id="@Model.Id">
+                    Edit
+                </a>
+                <button type="button" class="btn btn-danger col-3 mx-2" data-toggle="modal" data-target="#deleteModal">
+                    Delete
+                </button>
+            </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Confirm delete modal *@
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Delete blog</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure to delete this blog?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" value="@Model.Id" name="id" />
+                    <button class="btn btn-danger" type="submit">Delete</button>
+                </form>
             </div>
         </div>
     </div>

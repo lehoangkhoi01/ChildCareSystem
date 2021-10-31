@@ -1,0 +1,36 @@
+﻿.wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.section-title {
+    text-align: center;
+    padding-bottom: 20px;
+}
+
+    .section-title h2 {
+        font-size: 28px;
+        font-weight: bold;
+        text-transform: uppercase;
+        padding-bottom: 20px;
+        position: relative;
+    }
+
+        .section-title h2::after {
+            content: "";
+            position: absolute;
+            display: block;
+            width: 50px;
+            height: 3px;
+            background: #0275d8;
+            bottom: 0;
+            left: calc(50% - 25px);
+        }
+
+@media screen and (max-width: 575px) {
+    .wrapper {
+        padding: 0 !important;
+    }
+}
