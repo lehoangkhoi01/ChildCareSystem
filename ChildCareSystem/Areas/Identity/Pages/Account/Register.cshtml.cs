@@ -103,15 +103,11 @@ namespace ChildCareSystem.Areas.Identity.Pages.Account
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
+                   
                     _logger.LogInformation("User created a new account with password.");
                     // Add role
                     await _userManager.AddToRoleAsync(user, Input.RoleAssigned);
-                    if(!string.IsNullOrEmpty(Input.SpecialtyId))
-                    {
-                        await _userManager.AddClaimAsync(user, new Claim("SpecialtyId", Input.SpecialtyId));
-                    }
-                    
-
+                    await _userManager.AddClaimAsync(user, new Claim("DisplayName", user.FullName));
                     //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     //code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     //var callbackUrl = Url.Page(

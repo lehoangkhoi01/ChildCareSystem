@@ -15,12 +15,13 @@ using System.Threading.Tasks;
 
 namespace ChildCareSystem.Controllers
 {
-    [Authorize(Roles = "Customer")]
+    
     public class ReservationsController : Controller
     {
         private readonly ChildCareSystemContext _context;
         private readonly UserManager<ChildCareSystemUser> _userManager;
         private readonly SignInManager<ChildCareSystemUser> _signInManager;
+        private const int MAX_ITEM_PAGE = 4;
 
         public ReservationsController(ChildCareSystemContext context,
                                UserManager<ChildCareSystemUser> userManager,
@@ -30,7 +31,9 @@ namespace ChildCareSystem.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
         }
-        public IActionResult Index(bool? serviceBusy, bool? duplicated, bool? invalidTime)
+
+        [Authorize(Roles = "Customer")]
+        public IActionResult Index(int? service, string? error)
         {
             var patientProfileList = _context.Patient.Where(p =>
                                             p.CustomerId == User.FindFirstValue(ClaimTypes.NameIdentifier)
@@ -43,24 +46,28 @@ namespace ChildCareSystem.Controllers
             ViewBag.PatientList = patientProfileList;
             ViewBag.PatientCount = profileCount;
             ViewBag.TimeList = timeAvailableList;
-            ViewData["Service"] = new SelectList(_context.Service, "Id", "ServiceName");
+            ViewData["Service"] = new SelectList(_context.Service, "Id", "ServiceName", service);
 
-            if(serviceBusy != null && serviceBusy == true)
+
+            switch(error)
             {
-                ViewBag.ERROR = "You can not make reservation for service in chosen time. Try to change time or date.";         
-            } 
-            else if (duplicated != null && duplicated == true)
-            {
-                ViewBag.ERROR = "You have already make medical reservation for this patient in chosen time.";
+                case "serviceBusy":
+                    ViewBag.ERROR = "You can not make reservation for service in chosen time. Try to change time or date.";
+                    break;
+                case "duplicated":
+                    ViewBag.ERROR = "You have already make medical reservation for this patient in chosen time.";
+                    break;
+                case "invalidTime":
+                    ViewBag.ERROR = "You must make reservation for service before at least 1 hour.";
+                    break;
             }
-            else if (invalidTime != null && invalidTime == true)
-            {
-                ViewBag.ERROR = "You must make reservation for service before at least 1 hour.";
-            }
+  
             return View();
         }
 
 
+
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         public async  Task<IActionResult> Create([FromForm] string dateReservation, string timeReservation, int patientId, int serviceId)
         {
@@ -70,10 +77,14 @@ namespace ChildCareSystem.Controllers
 
 
             //Check validate datetime (must before at the moment at least 1 hour)
-            var timeDiff = (dateTime - DateTime.Now).TotalHours;
-            if (timeDiff < 1)
+            var timeDiff = (dateTime - DateTime.Now);
+            if (timeDiff.TotalHours < 1)
             {
-                return RedirectToAction(nameof(Index), new { invalidTime = true });
+                return RedirectToAction(nameof(Index), new { error = "invalidTime" });
+            } 
+            else if (timeDiff.TotalDays > 30) //Can not make reservation before 30 days
+            {
+                return RedirectToAction(nameof(Index), new { error = "serviceBusy" });
             }
 
             //Check duplicate reservation (same patient id and datetime)
@@ -83,7 +94,7 @@ namespace ChildCareSystem.Controllers
 
             if(duplicateReservation != null)
             {
-                return RedirectToAction(nameof(Index), new { duplicated = true });
+                return RedirectToAction(nameof(Index), new { error = "duplicated" });
             }
 
             // Get service by service id
@@ -111,7 +122,7 @@ namespace ChildCareSystem.Controllers
             if(String.IsNullOrEmpty(staffAssignedId))
             {
                 //Can not find free staff             
-                return RedirectToAction(nameof(Index), new { serviceBusy = true});
+                return RedirectToAction(nameof(Index), new { error = "serviceBusy"});
             }
 
             Reservation newReservation = new Reservation
@@ -128,39 +139,129 @@ namespace ChildCareSystem.Controllers
 
             return View();
         }
-    
-        public async Task<IActionResult> GetCustomerReservationsList(bool? invalidDelete, bool? feedbackError)
+
+        [HttpGet]
+        public async Task<IActionResult> Create()
         {
+            return View();
+        }
+
+        [Authorize(Roles = "Customer")]
+        public async Task<IActionResult> GetCustomerReservationsList(string? error, int page = 1)
+        {
+            
             var reservationList = _context.Reservations.Where(r => r.CustomerId == User.FindFirstValue(ClaimTypes.NameIdentifier))
                                                         .Include(u => u.Service)
                                                         .Include(u => u.ChildCareSystemUser)
-                                                        .Include(u => u.ChildCareSystemStaff)
-                                                        .Include(u => u.Patient);
+                                                        .Include(u => u.ChildCareSystemStaff)                                
+                                                        .Include(u => u.Patient)
+                                                        .OrderByDescending(u => u.CheckInDate);
 
-            if(invalidDelete != null && invalidDelete == true)
+            int pageCount = (int)Math.Ceiling(reservationList.Count() / (double)MAX_ITEM_PAGE);
+            if (page <= 0 || page > pageCount)
             {
-                ViewBag.ERROR = "You can only cancel your reservation before at least 1 hour";
-            } 
-            else if (feedbackError != null && feedbackError == true)
-            {
-                ViewBag.ERROR = "You can only give feedback about our service at least 1 hour after check in time. ";
+                return NotFound();
             }
-            return View("List", await reservationList.ToListAsync());
 
+            var resultList = await reservationList.Skip((page - 1) * MAX_ITEM_PAGE)
+                                                    .Take(MAX_ITEM_PAGE)
+                                                    .ToListAsync();
 
+            if(!String.IsNullOrEmpty(error))
+            {
+                switch (error)
+                {
+                    case "invalidCancel":
+                        ViewBag.ERROR = "You can only cancel your reservation before at least 45 minutes.";
+                        break;
+                    case "feedbackError":
+                        ViewBag.ERROR = "You can only give feedback about our service at least 1 hour after check in time. ";
+                        break;
+                }
+            }
+            
+            ViewBag.PageCount = pageCount;
+            ViewBag.CurrentPage = page;
+            return View("List", resultList);
         }
 
+        [Authorize(Roles = "Staff")]
+        public async Task<IActionResult> GetStaffSchedule(string? error)
+        {
+
+            var reservationList = await _context.Reservations.Where(r => r.StaffAssignedId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+                                                        .Include(u => u.Service)
+                                                        .Include(u => u.ChildCareSystemUser)
+                                                        .Include(u => u.ChildCareSystemStaff)
+                                                        .Include(u => u.Patient)
+                                                        .OrderByDescending(u => u.CheckInDate)
+                                                        .ToListAsync();
+
+            if (!String.IsNullOrEmpty(error))
+            {
+                switch (error)
+                {
+                    case "invalidCancel":
+                        ViewBag.ERROR = "You can only cancel your reservation before at least 45 minutes.";
+                        break;
+                    case "feedbackError":
+                        ViewBag.ERROR = "You can only give feedback about our service at least 1 hour after check in time. ";
+                        break;
+                }
+            }
+
+            
+            return View("StaffSchedule", reservationList);
+        }
+
+
+        public async Task<IActionResult> GetAllReservations()
+        {
+            var reservationList = await _context.Reservations.Include(u => u.Service)
+                                                        .Include(u => u.ChildCareSystemUser)
+                                                        .Include(u => u.ChildCareSystemStaff)
+                                                        .Include(u => u.Patient)
+                                                        .OrderByDescending(u => u.CheckInDate)
+                                                        .ToListAsync();
+            return View("AdminList", reservationList);
+        }
+
+        [Authorize(Roles = "Staff, Admin")]
+        public async Task<IActionResult> GetReservationDetail(int id)
+        {
+            var reservation = await _context.Reservations
+                                            .Include(r => r.Patient)
+                                            .Include(r => r.ChildCareSystemUser)
+                                            .Include(r => r.ChildCareSystemStaff)
+                                            .Include(r => r.Service)
+                                            .FirstOrDefaultAsync(r => r.Id == id);
+            if(reservation == null)
+            {
+                return NotFound();
+            }
+
+            var feedback = await _context.Feedback.FirstOrDefaultAsync(f => f.ReservationId == id);
+            if (feedback != null)
+            {
+                ViewBag.Feedback = feedback;
+            }
+
+            return View("Detail", reservation);
+        }
+
+        [Authorize(Roles = "Customer")]
+        [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
             var reservation = await _context.Reservations.FindAsync(id);
             
             if(reservation != null)
             {
-                var timeDiff = (reservation.CheckInDate - DateTime.Now).TotalHours;
-                if(timeDiff < 1)
+                var timeDiff = (reservation.CheckInDate - DateTime.Now).TotalMinutes;
+                if(timeDiff < 45)
                 {
                     return RedirectToAction(nameof(GetCustomerReservationsList), 
-                                            new { invalidDelete = true});
+                                            new { error = "invalidCancel"});
                 }
                 _context.Reservations.Remove(reservation);
                 await _context.SaveChangesAsync();

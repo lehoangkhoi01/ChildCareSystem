@@ -5,47 +5,79 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
-@if (!String.IsNullOrEmpty(ViewBag.AgeError))
-{
-    <div class="alert alert-danger" role="alert">
-        @ViewBag.AgeError
+
+
+
+<div class="wrapper p-5">
+    <div class="overlay-image overlay2 d-none d-lg-block d-xl-block">
+        <img src="https://firebasestorage.googleapis.com/v0/b/child-care-system-fa552.appspot.com/o/images%2Fcommon%2Fimage13.svg?alt=media&token=8d66ef47-8cd0-4983-ad7f-ec55c8e3f59b" />
     </div>
-}
-<h4>Patient</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="PatientName" class="control-label"></label>
+
+    <h3 class="mb-3">Patient's information</h3>
+    @if (!String.IsNullOrEmpty(ViewBag.AgeError))
+    {
+        <div class="alert alert-danger my-3" role="alert">
+            @ViewBag.AgeError
+        </div>
+    }
+
+    <form asp-action="Create" class="col-lg-6">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-row">
+            <div class="form-group col-12 col-lg-6">
+                <label class="control-label">Patient's name</label>
                 <input asp-for="PatientName" class="form-control" />
                 <span asp-validation-for="PatientName" class="text-danger"></span>
             </div>
-            <div class="form-group">
+
+            <div class="form-group col-lg-6">
                 <label asp-for="Gender" class="control-label"></label>
                 <select asp-for="Gender" class="form-control">
                     <option value="true">Male</option>
                     <option value="false">Female</option>
                 </select>
             </div>
-            <div class="form-group">
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-lg-6">
                 <label asp-for="Birthdate" class="control-label"></label>
-                <input asp-for="Birthdate" class="form-control" />
+                <input class="form-control" id="datepicker" />
                 <span asp-validation-for="Birthdate" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
+
+        <div class="form-group text-center">
+            <a class="btn btn-secondary col-6 col-lg-2 my-2"
+               style="color: #ffffff"
+               asp-action="Index">
+                Back
+            </a>
+            <input type="submit" value="Create" class="btn btn-success col-6 col-lg-3" />
+        </div>
+    </form>
+    <div class="alert alert-primary my-3 col-lg-6" role="alert">
+        By creating children profile, the children's information will be saved in our system and we will make it convenient for parents to keep track of patient's reservation history.
     </div>
+
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
+@section Styles {
+    <link href="@Url.Content("~/css/patient/create.css")" rel="stylesheet" type="text/css" />
+}
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://cdn.jsdelivr.net/npm/jquery-dropdown-datepicker@1.3.0/dist/jquery-dropdown-datepicker.min.js"></script>
+    <script>
+        $("#datepicker").dropdownDatepicker({
+            minAge: 2,
+            maxAge: 16,
+            submitFormat: 'mm-dd-yyyy',
+            required: true,
+            submitFieldName: 'birthdate'
+        });
+    </script>
+    
 }

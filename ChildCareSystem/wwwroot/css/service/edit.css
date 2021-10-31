@@ -1,0 +1,41 @@
+﻿.service-form-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100vw;
+}
+
+.form-wrapper {
+    display: flex;
+    flex-direction: column;
+    /*flex: 1;*/
+}
+
+.image-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    /*flex: 1;*/
+}
+
+    .image-wrapper img {
+        width: 100%;
+        height: 100%;
+    }
+
+@media screen and (max-width: 991px) {
+    .service-form-wrapper {
+        flex-direction: column;
+        padding: 0 !important;
+        margin-top: 1rem;
+        width: unset;
+    }
+
+    .form-wrapper {
+        align-items: center;
+    }
+
+    .form-wrapper h2 {
+        font-size: 22px;
+    }
+}
+

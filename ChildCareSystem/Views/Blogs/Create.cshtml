@@ -5,56 +5,69 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
-@if (!String.IsNullOrEmpty(ViewBag.ErrorMessage))
-{
-    <div class="alert alert-danger" role="alert">
-        @ViewBag.ErrorMessage
+<div class="loader hidden">
+    <img src="~/images/loading.gif" alt="Loading..." />
+</div>
+
+<div class="service-form-wrapper mt-3">
+    <div class="overlay-image overlay1 d-none d-lg-block d-xl-block">
+        <img src="~/images/image1.svg" />
     </div>
-    <script>
-        let status = 'failed'
-    </script>
-}
-<h4>Blog</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create" id="blogForm">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
+    <div class="overlay-image overlay2 d-none d-lg-block d-xl-block">
+        <img src="~/images/image3.svg" />
+    </div>
+    <h2>Create new blog</h2>
+    <form asp-action="Create" id="blogForm" class="col-md-6">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label class="control-label">Title</label>
                 <input asp-for="Title" class="form-control" />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
-            <div class="form-group">
+
+            <div class="form-group col-md-6">
                 <label asp-for="CategoryId" class="control-label"></label>
                 <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Category"></select>
             </div>
-            <div class="form-group">
-                <label asp-for="Content" class="control-label"></label>
-                <textarea asp-for="Content" class="form-control" rows="3"></textarea>
-                <span asp-validation-for="Content" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Content" class="control-label"></label>
+            <textarea asp-for="Content" class="form-control" rows="3" id="service-content"></textarea>
+            <span asp-validation-for="Content" class="text-danger"></span>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-12">
+                <label asp-for="ImageLink" class="control-label"></label>
+                <input asp-for="ImageLink" id="uploadedImg" hidden />
+                <input asp-for="ImageName" id="imageName" hidden />
+                <input type="file" id="image" class="form-control" />
+                <span asp-validation-for="ImageLink" class="text-danger"></span>
+                <span class="text-danger" hidden id="uploadImageError">Please choose an image for this blog.</span>
             </div>
-            <div class="form-row col-12">
-                <div class="form-group col-12">
-                    <label asp-for="ImageLink" class="control-label"></label>
-                    <input asp-for="ImageLink" id="uploadedImg" hidden/>
-                    <input asp-for="ImageName" id="imageName" hidden/>
-                    <input type="file" id="image" class="form-control" />
-                    <span asp-validation-for="ImageLink" class="text-danger"></span>
-                    <span class="text-danger" hidden id="uploadImageError">Please choose an image for this blog.</span>
-                </div>
-            </div>
-            <div class="form-group">
-                <button class="btn btn-primary col-md-3" type="button" onclick="upLoadImage()">Create</button>
-            </div>
-        </form>
-    </div>
+        </div>
+
+        <div class="text-center">
+            <button class="btn btn-primary col-md-3" type="button" onclick="upLoadImage()">Create</button>
+        </div>
+    </form>
+    @if (!String.IsNullOrEmpty(ViewBag.ErrorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @ViewBag.ErrorMessage
+        </div>
+        <script>
+            let status = 'failed'
+        </script>
+    }
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+@section Styles {
+    <link href="@Url.Content("~/css/blog/create.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/css/common/loading.css")" rel="stylesheet" type="text/css" />
+}
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
@@ -78,6 +91,11 @@
     </script>
     <script>
         function upLoadImage() {
+            //Disable button after click
+            $("#createButton").addClass("disbaled");
+            $("#createButton").attr("disbaled", true);
+            setTimeout(() => $(".loader").removeClass("hidden"), 1000);
+
             const ref = firebase.storage().ref("images/blogs");
             const file = document.querySelector("#image").files[0];
             if (file != null) {
@@ -89,7 +107,7 @@
                 const uploadIMG = ref.child(name).put(file, metadata);
                 uploadIMG
                     .then(snapshot => snapshot.ref.getDownloadURL())
-                    .then(url => {                       
+                    .then(url => {
                         $("#uploadedImg").val(url);
                         $("#blogForm").submit();
                     })
@@ -106,6 +124,23 @@
             firebase.storage().ref().child(fileLocation).delete();
         }
     </script>
-    
+
+    <script src="https://cdn.tiny.cloud/1/2t4he0yxbmprjqhk0y813ygaxy9y5u0mjixyrmjobarrfcvj/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+        tinymce.init({
+            selector: 'textarea#service-content',
+            skin: 'bootstrap',
+            plugins: 'lists, link, image, media',
+            toolbar: 'h1 h2 bold italic strikethrough blockquote bullist numlist backcolor | link image media | removeformat help',
+            menubar: false
+        });
+    </script>
+    <script>
+        tinymce.init({
+            selector: 'textarea#service-content',
+            menubar: false
+        });
+    </script>
+
 
 }

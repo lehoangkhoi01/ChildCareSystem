@@ -13,7 +13,7 @@ using System.Security.Claims;
 
 namespace ChildCareSystem.Controllers
 {
-    [Authorize (Roles = "Customer")]
+    
     public class FeedbacksController : Controller
     {
         private readonly ChildCareSystemContext _context;
@@ -24,9 +24,12 @@ namespace ChildCareSystem.Controllers
         }
 
         // GET: Feedbacks
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
-            var childCareSystemContext = _context.Feedback.Include(f => f.ChildCareSystemUser).Include(f => f.Reservation).Include(f => f.Service);
+            var childCareSystemContext = _context.Feedback.Include(f => f.ChildCareSystemUser)
+                                                            .Include(f => f.Reservation)
+                                                            .Include(f => f.Service);
             return View(await childCareSystemContext.ToListAsync());
         }
 
@@ -52,8 +55,15 @@ namespace ChildCareSystem.Controllers
         }
 
         // GET: Feedbacks/Create
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> Create(int reservationId)
         {
+            var feedback = await _context.Feedback.FirstOrDefaultAsync(u => u.ReservationId == reservationId);
+            if(feedback != null)
+            {
+                return RedirectToAction(nameof(Edit), new { id = feedback.Id });
+            }
+
             var reservation = await _context.Reservations.Include(u => u.Service)
                                                          .Include(u => u.Patient)
                                                          .Include(u => u.ChildCareSystemStaff)
@@ -64,13 +74,13 @@ namespace ChildCareSystem.Controllers
                 return NotFound();
             }
             // Only allow feedback after checkInTime 1 hour
-            //var timeDiff = (DateTime.Now - reservation.CheckInDate).TotalHours;
-            //if (timeDiff < 1)
-            //{
-            //    return RedirectToAction("GetCustomerReservationsList", 
-            //                            "Reservations", 
-            //                            new { feedbackError = true });
-            //}
+            var timeDiff = (DateTime.Now - reservation.CheckInDate).TotalHours;
+            if (timeDiff < 1)
+            {
+                return RedirectToAction("GetCustomerReservationsList",
+                                        "Reservations",
+                                        new { error = "feedbackError" });
+            }
 
             // Process to load information
             ViewBag.ReservationInfo = reservation;
@@ -80,6 +90,7 @@ namespace ChildCareSystem.Controllers
         // POST: Feedbacks/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Rate,Comment,ServiceId,ReservationId,CustomerId")] FeedbackViewModel feedbackViewModel)
@@ -97,7 +108,7 @@ namespace ChildCareSystem.Controllers
                 };
                 _context.Add(feedback);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("GetCustomerReservationsList", "Reservations");
             }
             if (feedbackViewModel.Rate < 1)
             {
@@ -115,6 +126,7 @@ namespace ChildCareSystem.Controllers
         }
 
         // GET: Feedbacks/Edit/5
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -128,6 +140,15 @@ namespace ChildCareSystem.Controllers
                 return NotFound();
             }
 
+            FeedbackViewModel feedbackViewModel = new FeedbackViewModel
+            {
+                Id = feedback.Id,
+                Comment = feedback.Comment,
+                Rate = feedback.Rate,
+                ReservationId = feedback.ReservationId,
+                ServiceId = feedback.ServiceId
+            };
+
 
             // Get reservation info
             var reservation = await _context.Reservations.Include(u => u.Service)
@@ -140,18 +161,19 @@ namespace ChildCareSystem.Controllers
                 return NotFound();
             }
 
-
-            return View(feedback);
+            ViewBag.ReservationInfo = reservation;
+            return View(feedbackViewModel);
         }
 
         // POST: Feedbacks/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Rate,Comment,ServiceId,ReservationId")] Feedback feedback)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Rate,Comment,ServiceId,ReservationId")] FeedbackViewModel feedbackViewModel)
         {
-            if (id != feedback.Id)
+            if (id != feedbackViewModel.Id)
             {
                 return NotFound();
             }
@@ -160,12 +182,21 @@ namespace ChildCareSystem.Controllers
             {
                 try
                 {
+                    Feedback feedback = new Feedback
+                    {
+                        Id = feedbackViewModel.Id,
+                        Rate = feedbackViewModel.Rate,
+                        Comment = feedbackViewModel.Comment,
+                        ReservationId = feedbackViewModel.ReservationId,
+                        ServiceId = feedbackViewModel.ServiceId,
+                        CustomerId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                    };
                     _context.Update(feedback);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!FeedbackExists(feedback.Id))
+                    if (!FeedbackExists(feedbackViewModel.Id))
                     {
                         return NotFound();
                     }
@@ -174,9 +205,9 @@ namespace ChildCareSystem.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("GetCustomerReservationsList", "Reservations");
             }
-            return View(feedback);
+            return View(feedbackViewModel);
         }
 
         // GET: Feedbacks/Delete/5
@@ -208,7 +239,7 @@ namespace ChildCareSystem.Controllers
             var feedback = await _context.Feedback.FindAsync(id);
             _context.Feedback.Remove(feedback);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("GetCustomerReservationsList", "Reservations");
         }
 
         private bool FeedbackExists(int id)

@@ -10,12 +10,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.2/css/bootstrap-responsive.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="~/css/common/navbar.css">
+
     <link href="@Url.Content("~/css/")" rel="stylesheet" type="text/css" />
     @RenderSection("Styles", false)
 </head>
 <body>
     <header>
-        <div class="header_wrapper px-5 py-2">
+        <div class="header_wrapper py-2">
             <div class="header_top">
                 <nav class="navbar navbar-light bg-light">
                     <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
@@ -43,23 +45,16 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item px-3">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Blog
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" asp-area="" asp-controller="BlogCategories" asp-action="Index">Blog Category</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" asp-area="" asp-controller="Blogs" asp-action="Index">Blog</a>
-                            </div>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>                       
+                        <li class="nav-item px-3">
+                            <a class="nav-link" asp-area="" asp-controller="Blogs" asp-action="Index">Blog</a>
                         </li>
                         <li class="nav-item px-3">
                             <a class="nav-link" asp-area="" asp-controller="Services" asp-action="Index">Service</a>
                         </li>
                         <li class="nav-item px-3">
-                            <a class="nav-link" asp-area="" asp-controller="Specialties" asp-action="Index">Specialty</a>
+                            <a class="nav-link" asp-area="" asp-controller="Reservations" asp-action="GetStaffSchedule">Schedule</a>
                         </li>
                         <li class="nav-item px-3">
                             <a class="nav-link" asp-area="" asp-controller="Patients" asp-action="Index">Patient</a>
@@ -82,6 +77,16 @@
                                 <a class="dropdown-item" asp-area="" asp-controller="ManageAccounts" asp-action="Index">Accounts</a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" asp-area="" asp-controller="TimeAvailables" asp-action="Index">Time</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" asp-area="" asp-controller="Reservations" asp-action="GetAllReservations">Reservations</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" asp-area="" asp-controller="Patients" asp-action="GetAll">Patients</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" asp-area="" asp-controller="BlogCategories" asp-action="Index">Blog Category</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" asp-area="" asp-controller="Specialties" asp-action="Index">Specialty</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" asp-area="" asp-controller="Feedbacks" asp-action="Index">Feedback</a>
                             </div>
                         </li>
                     </ul>
@@ -111,7 +116,7 @@
                 </div>
             </nav>*@
     </header>
-    <div class="px-5">
+    <div class="">
         <main role="main" class="pb-3" style="min-height: 75vh">
             @RenderBody()
         </main>

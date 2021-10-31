@@ -5,56 +5,126 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<div class="wrapper px-3 py-5">
+    <div class="section-title my-3">
+        <h2>Feedbacks</h2>
+    </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Rate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Comment)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Service)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Reservation)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ChildCareSystemUser)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Rate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Comment)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Service.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Reservation.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ChildCareSystemUser.Id)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+    @*<form asp-controller="Feedback" asp-action="GetAll" method="get" class="col-6 mb-3">
+        <div class="form-row col-12">
+            <div class="form-group col-md-4">
+                <label for="product-status">Status</label>
+                <select name="status" id="product-status" class="form-control">
+                    <option value="">All</option>
+                    <option value="2">Active</option>
+                    <option value="3">Inactive</option>
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary col-md-2 ml-3">Filter</button>
+    </form>*@
+
+    <div class="table-wrapper">
+        <table class="table table-striped table-bordered mydatatable">
+            <thead>
+                <tr>
+                    <th>
+                        ID
+                    </th>
+                    <th>
+                        Reservation ID
+                    </th>
+                    <th>
+                        Customer
+                    </th>
+                    <th>
+                        Rate
+                    </th>
+                    <th>
+                        Comment
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @item.Id
+                        </td>
+                        <td>
+                            @item.Reservation.Id
+                        </td>
+                        <td>
+                            @item.ChildCareSystemUser.FullName
+                        </td>
+                        <td>
+                            @item.Rate
+                        </td>
+                        <td>
+                            @item.Comment
+                        </td>
+                        <td>
+                            <a asp-action="Details"
+                               asp-route-id="@item.Id">
+                                Detail
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+        }
+
+            .wrapper form {
+                align-self: flex-start;
+            }
+
+        .table-wrapper {
+            width: 90vw;
+        }
+
+        .section-title {
+            text-align: center;
+        }
+
+            .section-title h2 {
+                font-size: 28px;
+                font-weight: bold;
+                text-transform: uppercase;
+                padding-bottom: 20px;
+                position: relative;
+            }
+
+                .section-title h2::after {
+                    content: "";
+                    position: absolute;
+                    display: block;
+                    width: 50px;
+                    height: 3px;
+                    background: #0275d8;
+                    bottom: 0;
+                    left: calc(50% - 25px);
+                }
+    </style>
 }
-    </tbody>
-</table>
+
+@section Scripts {
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+    <script>
+        $(".mydatatable").DataTable();
+    </script>
+}

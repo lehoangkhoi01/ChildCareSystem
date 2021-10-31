@@ -8,6 +8,7 @@ namespace ChildCareSystem.ViewModels
 {
     public class FeedbackViewModel
     {
+        public int Id { get; set; }
         public int Rate { get; set; }
 
         [Required (ErrorMessage = "You should leave a comment about our service.")]
