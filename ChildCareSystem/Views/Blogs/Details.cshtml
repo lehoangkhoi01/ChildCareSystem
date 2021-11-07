@@ -33,16 +33,16 @@
                 <br />
                 @if (User.IsInRole("Admin"))
                 {
-            <div class="text-center button-group">
-                <a class="btn btn-success col-3 mx-2" style="color: #fff"
-                   asp-action="Edit"
-                   asp-route-id="@Model.Id">
-                    Edit
-                </a>
-                <button type="button" class="btn btn-danger col-3 mx-2" data-toggle="modal" data-target="#deleteModal">
-                    Delete
-                </button>
-            </div>
+                    <div class="text-center button-group">
+                        <a class="btn btn-success col-3 mx-2" style="color: #fff"
+                           asp-action="Edit"
+                           asp-route-id="@Model.Id">
+                            Edit
+                        </a>
+                        <button type="button" class="btn btn-danger col-3 mx-2" data-toggle="modal" data-target="#deleteModal">
+                            Delete
+                        </button>
+                    </div>
                 }
             </div>
         </div>

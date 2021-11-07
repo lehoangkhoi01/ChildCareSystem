@@ -84,6 +84,7 @@ namespace ChildCareSystem.Controllers
                     // Add role
                     await _userManager.AddToRoleAsync(user, staffViewModel.RoleAssigned);
                     await _userManager.AddClaimAsync(user, new Claim("SpecialtyId", staffViewModel.SpecialtyId));
+                    await _userManager.AddClaimAsync(user, new Claim("DisplayName", staffViewModel.Fullname));
                     return RedirectToAction(nameof(Index));
                 }
 

@@ -1,5 +1,8 @@
 ﻿@model IEnumerable<ChildCareSystem.Models.Service>
-
+@using Microsoft.AspNetCore.Identity
+@using ChildCareSystem.Areas.Identity.Data
+@inject SignInManager<ChildCareSystemUser> SignInManager
+@inject UserManager<ChildCareSystemUser> UserManager
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -12,9 +15,15 @@
     <div class="section-title">
         <h2>Our services</h2>
     </div>
-   
+
     <div class="service-wrapper">
         <form class="col-12" asp-action="Index" method="get">
+            @if (User.IsInRole("Admin"))
+            {
+                <div class="form-row col-12 my-3">
+                    <a asp-action="Create" class="btn btn-primary">Add new blog</a>
+                </div>
+            }
             <div class="form-row col-12 col-lg-6">
                 <input type="text" class="form-control col-8" placeholder="Service's name" name="search">
                 <div class="input-group-append">
@@ -77,5 +86,5 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-<script src="~/js/loading.js"></script>
+    <script src="~/js/loading.js"></script>
 }

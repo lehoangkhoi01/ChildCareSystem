@@ -35,7 +35,8 @@ namespace ChildCareSystem.Controllers
         {
             var childCareSystemContext = _context.Patient.Include(p => p.ChildCareSystemUser)
                                                             .Include(p => p.Status)
-                                                            .Where(p => p.StatusId == 2);
+                                                            .Where(p => p.StatusId == 2 
+                                                            && p.CustomerId == User.FindFirstValue(ClaimTypes.NameIdentifier));
             if(!String.IsNullOrEmpty(maxPatientError))
             {
                 ViewBag.MAX_PATIENT_ERROR = maxPatientError;
@@ -194,26 +195,7 @@ namespace ChildCareSystem.Controllers
             return View(patient);
         }
 
-        // GET: Patients/Delete/5
-        //public async Task<IActionResult> Delete(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var patient = await _context.Patient
-        //        .Include(p => p.ChildCareSystemUser)
-        //        .Include(p => p.Status)
-        //        .FirstOrDefaultAsync(m => m.Id == id);
-        //    if (patient == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return View(patient);
-        //}
-
+        
         // POST: Patients/Delete/5
         [Authorize(Roles = "Customer")]
         [HttpPost, ActionName("Delete")]
