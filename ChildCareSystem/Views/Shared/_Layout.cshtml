@@ -57,11 +57,12 @@
                         <li class="nav-item px-3">
                             <a class="nav-link" asp-area="" asp-controller="Services" asp-action="Index">Service</a>
                         </li>
-                        <li class="nav-item px-3">
-                            <a class="nav-link" asp-area="" asp-controller="Patients" asp-action="Index">Patient</a>
-                        </li>
+
                         @if (User.IsInRole("Customer"))
                         {
+                            <li class="nav-item px-3">
+                                <a class="nav-link" asp-area="" asp-controller="Patients" asp-action="Index">Patient</a>
+                            </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     Reservations
