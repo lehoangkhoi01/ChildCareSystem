@@ -44,7 +44,7 @@ namespace ChildCareSystem.Controllers
             {
                 pageCount = (int)Math.Ceiling(_context.Service.Count() / (double)MAX_ITEM_PAGE);
             }
-            
+
             if (page <= 0 || page > pageCount)
             {
                 return NotFound();

@@ -33,22 +33,26 @@
             <p>Follow our blogs to get more useful tips and information for your children.</p>
         </div>
         <div class="row">
-            @foreach (var item in ViewBag.BlogList)
+            @if (ViewBag.BlogList != null)
             {
-                <div class="col-lg-4 col-md-6 d-flex align-items-stretch service-item">
-                    <img src="@item.Image" />
-                    <div class="icon-box">
-                        <h4>
-                            <a asp-controller="Blogs"
-                               asp-action="Details"
-                               asp-route-id="@item.Id">
-                                @item.Title
-                            </a>
-                        </h4>
-                        <div>@Html.Raw(item.Content)</div>
+                foreach (var item in ViewBag.BlogList)
+                {
+                    <div class="col-lg-4 col-md-6 d-flex align-items-stretch service-item">
+                        <img src="@item.Image" />
+                        <div class="icon-box">
+                            <h4>
+                                <a asp-controller="Blogs"
+                                   asp-action="Details"
+                                   asp-route-id="@item.Id">
+                                    @item.Title
+                                </a>
+                            </h4>
+                            <div>@Html.Raw(item.Content)</div>
+                        </div>
                     </div>
-                </div>
+                }
             }
+
         </div>
         <a asp-controller="Blogs" asp-action="Index" class="float-right mt-3">View all blogs</a>
     </div>
@@ -75,21 +79,24 @@
             <p>We want to bring our best services to customers.</p>
         </div>
         <div class="row">
-            @foreach (var item in ViewBag.ServiceList)
+            @if (ViewBag.ServiceList != null)
             {
-                <div class="col-lg-4 col-md-6 d-flex align-items-stretch service-item">
-                    <img src="@item.ThumbnailLink" />
-                    <div class="icon-box">
-                        <h4>
-                            <a asp-controller="Services"
-                               asp-action="Details"
-                               asp-route-id="@item.Id">
-                                @item.ServiceName
-                            </a>
-                        </h4>
-                        <div>@Html.Raw(item.Description)</div>
+                foreach (var item in ViewBag.ServiceList)
+                {
+                    <div class="col-lg-4 col-md-6 d-flex align-items-stretch service-item">
+                        <img src="@item.ThumbnailLink" />
+                        <div class="icon-box">
+                            <h4>
+                                <a asp-controller="Services"
+                                   asp-action="Details"
+                                   asp-route-id="@item.Id">
+                                    @item.ServiceName
+                                </a>
+                            </h4>
+                            <div>@Html.Raw(item.Description)</div>
+                        </div>
                     </div>
-                </div>
+                }
             }
         </div>
         <a asp-controller="Services" asp-action="Index" class="float-right mt-3">View all services</a>

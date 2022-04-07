@@ -158,10 +158,10 @@ namespace ChildCareSystem.Controllers
                                                         .OrderByDescending(u => u.CheckInDate);
 
             int pageCount = (int)Math.Ceiling(reservationList.Count() / (double)MAX_ITEM_PAGE);
-            if (page <= 0 || page > pageCount)
-            {
-                return NotFound();
-            }
+            //if (page <= 0 || page > pageCount)
+            //{
+            //    return NotFound();
+            //}
 
             var resultList = await reservationList.Skip((page - 1) * MAX_ITEM_PAGE)
                                                     .Take(MAX_ITEM_PAGE)

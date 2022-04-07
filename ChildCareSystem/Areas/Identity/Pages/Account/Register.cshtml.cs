@@ -98,7 +98,7 @@ namespace ChildCareSystem.Areas.Identity.Pages.Account
                     Email = Input.Email,
                     PhoneNumber = Input.PhoneNumber,
                     FullName = Input.Fullname,
-                    Address = Input.Address
+                    Address = Input.Address,
                 };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
